@@ -16,17 +16,19 @@ import time
 class ChargingEnv(gym.Env):
     def __init__(self, price=1, solar=1):
         # basic_model_parameters
-        self.number_of_cars = 10
+        self.number_of_cars = 10            # Charging spots
         self.number_of_days = 1
         self.price_flag = price
         self.solar_flag = solar
         self.done = False
+
         # EV_parameters
         EV_capacity = 30
         charging_effic = 0.91
         discharging_effic = 0.91
         charging_rate = 11
         discharging_rate = 11
+
         self.EV_Param = {'charging_effic': charging_effic, 'EV_capacity': EV_capacity,
                          'discharging_effic': discharging_effic, 'charging_rate': charging_rate,
                          'discharging_rate': discharging_rate}
@@ -50,8 +52,8 @@ class ChargingEnv(gym.Env):
         # self.current_folder = os.getcwd() + '\\utils\\Files\\'
         self.current_folder = os.path.realpath(os.path.join(os.path.dirname(__file__), '..')) + '\\Files\\'
 
-        low = np.array(np.zeros(8+2*self.number_of_cars), dtype=np.float32)
-        high = np.array(np.ones(8+2*self.number_of_cars), dtype=np.float32)
+        low = np.array(np.zeros(8+2*self.number_of_cars), dtype=np.float32)     # Lower threshold of state space
+        high = np.array(np.ones(8+2*self.number_of_cars), dtype=np.float32)     # Upper threshold of state space
         self.action_space = spaces.Box(
             low=-1,
             high=1, shape=(self.number_of_cars,),
@@ -67,7 +69,7 @@ class ChargingEnv(gym.Env):
 
     def step(self, actions):
 
-        [reward, Grid,Res_wasted,Cost_EV,self.BOC] = Simulate_Actions3.simulate_clever_control(self, actions)
+        [reward, Grid, Res_wasted, Cost_EV, self.BOC] = Simulate_Actions3.simulate_clever_control(self, actions)
 
         self.Grid_Evol.append(Grid)
         self.Res_wasted_evol.append(Res_wasted)
