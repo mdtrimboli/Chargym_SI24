@@ -9,6 +9,7 @@ import gym
 import numpy as np
 import os
 
+from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.ddpg.policies import MlpPolicy
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from stable_baselines3 import DDPG, PPO
@@ -24,8 +25,7 @@ if not os.path.exists(logdir):
     os.makedirs(logdir)
 
 
-env = gym.make('ChargingEnv-v0')
-from stable_baselines3.common.env_checker import check_env
+env = gym.make('ChargingEnv-v0')            # Creación del entorno gym
 
 # It will check your custom environment and output additional warnings if needed
 check_env(env)
