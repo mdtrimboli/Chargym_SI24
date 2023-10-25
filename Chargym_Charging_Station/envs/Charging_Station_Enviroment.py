@@ -34,7 +34,7 @@ class ChargingEnv(gym.Env):
                          'discharging_rate': discharging_rate}
 
         # Battery_parameters
-        Battery_Capacity = 20
+        Battery_Capacity = 20       #TODO: Según la tabla 1 del paper debería ser 30
         Bcharging_effic = 0.91
         Bdischarging_effic = 0.91
         Bcharging_rate = 11
@@ -44,7 +44,7 @@ class ChargingEnv(gym.Env):
                           'Bdischarging_rate': Bdischarging_rate}
 
         # Renewable_Energy
-        PV_Surface = 2.279 * 1.134 * 20
+        PV_Surface = 2.279 * 1.134 * 20     # = 51,68772 [??]
         PV_effic = 0.21
 
         self.PV_Param = {'PV_Surface': PV_Surface, 'PV_effic': PV_effic}
@@ -54,12 +54,12 @@ class ChargingEnv(gym.Env):
 
         low = np.array(np.zeros(8+2*self.number_of_cars), dtype=np.float32)     # Lower threshold of state space
         high = np.array(np.ones(8+2*self.number_of_cars), dtype=np.float32)     # Upper threshold of state space
-        self.action_space = spaces.Box(
+        self.action_space = spaces.Box(     # Setea el espacio de acción entre {-1 y 1}
             low=-1,
-            high=1, shape=(self.number_of_cars,),
+            high=1, shape=(self.number_of_cars,),     # Con el tamaño de la cantidad de autos
             dtype=np.float32
         )
-        self.observation_space = spaces.Box(
+        self.observation_space = spaces.Box(     # Setea el espacio de observación entre {0 y 1}
             low=low,
             high=high,
             dtype=np.float32
@@ -71,10 +71,10 @@ class ChargingEnv(gym.Env):
 
         [reward, Grid, Res_wasted, Cost_EV, self.BOC] = Simulate_Actions3.simulate_clever_control(self, actions)
 
-        self.Grid_Evol.append(Grid)
-        self.Res_wasted_evol.append(Res_wasted)
-        self.Penalty_Evol.append(Cost_EV)
-        self.Cost_History.append(reward)
+        self.Grid_Evol.append(Grid)     # Lo que consume de la red
+        self.Res_wasted_evol.append(Res_wasted)     # Energía renovable disponible
+        self.Penalty_Evol.append(Cost_EV)     # Costo 3 (por no cargar 100% los autos)
+        self.Cost_History.append(reward)        # Costo total
         self.timestep = self.timestep + 1
         conditions = self.get_obs()
         if self.timestep == 24:
@@ -86,30 +86,30 @@ class ChargingEnv(gym.Env):
             savemat(self.current_folder + '\Results.mat', {'Results': Results})
 
         self.info = {}
-        return conditions, -reward, self.done, self.info
+        return conditions, -reward, self.done, self.info        # Devuelve la observación, - (el costo), y si terminó los 24 steps
 
-    def reset(self, reset_flag):
+    def reset(self, reset_flag=0):
         self.timestep = 0
         self.day = 1
         self.done = False
         Consumed, Renewable, Price, Radiation = Energy_Calculations.Energy_Calculation(self)
         self.Energy = {'Consumed': Consumed, 'Renewable': Renewable,
-                       'Price': Price, 'Radiation': Radiation}
-        if reset_flag == 0:
+                       'Price': Price, 'Radiation': Radiation}      # Saca valores de 'Energy_Calculations' y los guarda en Energy
+        if reset_flag == 0:     # Si se reseteó, saca valores de Init_Values y los carga en Invalues
             [BOC, ArrivalT, DepartureT, evolution_of_cars, present_cars] = Init_Values.InitialValues_per_day(self)
             self.Invalues = {'BOC': BOC, 'ArrivalT': ArrivalT, 'evolution_of_cars': evolution_of_cars,
                              'DepartureT': DepartureT, 'present_cars': present_cars}
-            savemat(self.current_folder + '\Initial_Values.mat', self.Invalues)
-        else:
+            savemat(self.current_folder + '\Initial_Values.mat', self.Invalues)     # Guarda Invalues en carpeta
+        else:       # Si no se reseteó, saca valores de Invalues de la carpeta y los carga en Invalues
             contents = loadmat(self.current_folder + '\Initial_Values.mat')
             self.Invalues = {'BOC': contents['BOC'], 'Arrival': contents['ArrivalT'][0],
                              'evolution_of_cars': contents['evolution_of_cars'], 'Departure': contents['DepartureT'][0],
                              'present_cars': contents['present_cars'], 'ArrivalT': [], 'DepartureT': []}
-            for ii in range(self.number_of_cars):
+            for ii in range(self.number_of_cars):       # Guarda todos los valores de Arrival y Departure en ArrivalT y DepartureT
                 self.Invalues['ArrivalT'].append(self.Invalues['Arrival'][ii][0].tolist())
                 self.Invalues['DepartureT'].append(self.Invalues['Departure'][ii][0].tolist())
 
-        return self.get_obs()
+        return self.get_obs()       # Devuelve Observación
 
     def get_obs(self):
         if self.timestep == 0:
@@ -120,14 +120,16 @@ class ChargingEnv(gym.Env):
             self.BOC = self.Invalues["BOC"]
 
         [self.leave, Departure_hour, Battery] = Simulate_Station3.Simulate_Station(self)
+        # Autos que se van en la siguiente hora, Hora que falta para salir de cada auto, Soc de cada auto.
 
         disturbances = np.array([self.Energy["Radiation"][0, self.timestep] / 1000, self.Energy["Price"][0, self.timestep] / 0.1])
+        # disturbances = [Radiación Actual / 1000, Precio Actual / 0.1] --> para mapear a [0,1]
         predictions = np.concatenate((np.array([self.Energy["Radiation"][0, self.timestep + 1:self.timestep + 4] / 1000]), np.array([self.Energy["Price"][0,self.timestep + 1:self.timestep + 4] / 0.1])), axis=None),
-
+        # predictions = [Radiación+1; Radiación+4, Precio+1; Precio+4]
         states = np.concatenate((np.array(Battery), np.array(Departure_hour)/24),axis=None)
-
+        # states = [SoC1; SoC10, Horas para salir1; Horas para salir10]
         observations = np.concatenate((disturbances,predictions,states),axis=None)
-
+        # observations = [disturbances, predictions, states]
         return observations
 
     def seed(self, seed=None):
