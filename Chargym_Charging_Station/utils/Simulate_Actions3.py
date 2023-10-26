@@ -10,7 +10,7 @@ def simulate_clever_control(self, actions):
     #print(present_cars[:,hour])
 
     leave = self.leave
-    BOC = self.BOC      # TODO: BOC = Battery State of Charge = SoC
+    BOC = self.BOC      # SOC
 
     P_charging = np.zeros(self.number_of_cars)
     # Calculation of demand based on actions
@@ -26,6 +26,7 @@ def simulate_clever_control(self, actions):
 
         # P_charging[car] = actions[car]/100*max_charging_energy
         # P_charging[car] = 100 * actions[car] / 100 * max_charging_energy
+
         if present_cars[car, hour] == 1:      # Si el auto está --> Ec (4) del paper (Pdem)
             P_charging[car] = 100*actions[car]/100*max_charging_energy
         else:
@@ -36,7 +37,7 @@ def simulate_clever_control(self, actions):
     for car in range(self.number_of_cars):
         if present_cars[car, hour] == 1:      # Si el auto está --> SoC próximo = SoC actual + Pdem/capacidad
             BOC[car, hour+1] = BOC[car, hour] + P_charging[car]/self.EV_Param['EV_capacity']
-            """ Puede llegar a ser mayor que 1???"""
+            # TODO: Puede llegar a ser mayor que 1???
             # Pdem/capacidad es lo que se va a cargar la batería en la próxima hora
 
     # Calculation of energy utilization from the PV
@@ -57,8 +58,8 @@ def simulate_clever_control(self, actions):
     # RES_avail = max([RES_avail-Total_charging, 0])
     # Cost_2 = -RES_avail * (self.Energy["Price"][0, hour]/2)
 
-    #Third Cost index
-    #Penalty of not fully charging the cars that leave
+    # Third Cost index
+    # Penalty of not fully charging the cars that leave
     # ----------------------------------------------------------------------------
     Cost_EV = []
     for ii in range(len(leave)):
@@ -68,5 +69,9 @@ def simulate_clever_control(self, actions):
 
     Cost = Cost_1 + Cost_3
 
-    return Cost, Grid_final, RES_avail, Cost_3, BOC     #Costo, Lo que consume de la red, Energía renovable disponible,
-                                                        # Costo por no cargar 100% un auto, Soc
+    return Cost, Grid_final, RES_avail, Cost_3, BOC
+    # Cost: Costo total
+    # Grid_final: Lo que se consume de la red
+    # RES_avail: Energía renovable disponible,
+    # Cost_3: Costo por no cargar 100% un auto,
+    # Soc
