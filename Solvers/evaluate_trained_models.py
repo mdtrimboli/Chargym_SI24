@@ -19,20 +19,15 @@ parser.add_argument("--reset_flag", default=1, type=int)
 args = parser.parse_args()
 env = gym.make(args.env)
 #Define which model to load
-#models_dir1="models/DDPG-1646748022"
-#model_path1=f"{models_dir1}/940000.zip"
-#model1 = DDPG.load(model_path1, env=env)
-models_dir1="models\DDPG-1693570453" #Modifiqué la dirección del modelo
-model_path1=f"{models_dir1}\940000" #Saqué el .zip que se agrega posteriormente
+
+models_dir1 = "RL/models/DDPG-1693570453"  # Modifiqué la dirección del modelo
+model_path1 = f"{models_dir1}/980000.zip"   # Saqué el .zip que se agrega posteriormente
 model1 = DDPG.load(model_path1, env=env)
 
 
-models_dir2="models/PPO-1646764100"
-model_path2=f"{models_dir2}/940000.zip"
+models_dir2="RL/models/PPO-1693578854"
+model_path2=f"{models_dir2}/980000.zip"
 model2 = PPO.load(model_path2, env=env)
-#models_dir2="models\PPO-1693578854" #Modifiqué la dirección del modelo
-#model_path2=f"{models_dir2}\940000" #Saqué el .zip que se agrega posteriormente
-#model2 = PPO.load(model_path2, env=env)
 
 
 #How many evaluations

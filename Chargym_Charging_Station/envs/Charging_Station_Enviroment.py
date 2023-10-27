@@ -18,8 +18,8 @@ class ChargingEnv(gym.Env):
         # basic_model_parameters
         self.number_of_cars = 10            # Charging spots
         self.number_of_days = 1
-        self.price_flag = price
-        self.solar_flag = solar
+        self.price_flag = price             # Curva de precio elegida
+        self.solar_flag = solar             # Habilitacion del Panel PV
         self.done = False
 
         # EV_parameters
@@ -33,7 +33,7 @@ class ChargingEnv(gym.Env):
                          'discharging_effic': discharging_effic, 'charging_rate': charging_rate,
                          'discharging_rate': discharging_rate}
 
-        # Battery_parameters
+        # Battery_parameters (Bateria interna de la estacion)
         Battery_Capacity = 20       #TODO: Según la tabla 1 del paper debería ser 30
         Bcharging_effic = 0.91
         Bdischarging_effic = 0.91
@@ -44,7 +44,7 @@ class ChargingEnv(gym.Env):
                           'Bdischarging_rate': Bdischarging_rate}
 
         # Renewable_Energy
-        PV_Surface = 2.279 * 1.134 * 20     # = 51,68772 [??]
+        PV_Surface = 2.279 * 1.134 * 20     # = 51,68772 [m2]
         PV_effic = 0.21
 
         self.PV_Param = {'PV_Surface': PV_Surface, 'PV_effic': PV_effic}
@@ -54,12 +54,14 @@ class ChargingEnv(gym.Env):
 
         low = np.array(np.zeros(8+2*self.number_of_cars), dtype=np.float32)     # Lower threshold of state space
         high = np.array(np.ones(8+2*self.number_of_cars), dtype=np.float32)     # Upper threshold of state space
-        self.action_space = spaces.Box(     # Setea el espacio de acción entre {-1 y 1}
+        # Definicion de espacio de accion
+        self.action_space = spaces.Box(     # Setea entre {-1 y 1}
             low=-1,
             high=1, shape=(self.number_of_cars,),     # Con el tamaño de la cantidad de autos
             dtype=np.float32
         )
-        self.observation_space = spaces.Box(     # Setea el espacio de observación entre {0 y 1}
+        # Definicion de espacio de estados
+        self.observation_space = spaces.Box(     # Setea entre {0 y 1}
             low=low,
             high=high,
             dtype=np.float32
@@ -68,6 +70,12 @@ class ChargingEnv(gym.Env):
         self.seed
 
     def step(self, actions):
+
+        # reward: Costo total
+        # Grid: Lo que se consume de la red
+        # Res_wasted: Energía renovable disponible,
+        # Cost_EV: Costo por no cargar 100% un auto,
+        # BOC: SOC
 
         [reward, Grid, Res_wasted, Cost_EV, self.BOC] = Simulate_Actions3.simulate_clever_control(self, actions)
 
@@ -118,6 +126,11 @@ class ChargingEnv(gym.Env):
             self.Res_wasted_evol = []
             self.Penalty_Evol =[]
             self.BOC = self.Invalues["BOC"]
+
+        # TODO: Agregar comentarios siguientes:
+        # leave:
+        # Departure_hour:
+        # Battery:
 
         [self.leave, Departure_hour, Battery] = Simulate_Station3.Simulate_Station(self)
         # Autos que se van en la siguiente hora, Hora que falta para salir de cada auto, Soc de cada auto.

@@ -15,7 +15,7 @@ from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckA
 from stable_baselines3 import DDPG, PPO
 from stable_baselines3.common.evaluation import evaluate_policy
 import time
-models_dir = f"../../models/DDPG-{int(time.time())}"
+models_dir = f"models/DDPG-{int(time.time())}"
 logdir = f"logs/DDPG-{int(time.time())}"
 
 if not os.path.exists(models_dir):
