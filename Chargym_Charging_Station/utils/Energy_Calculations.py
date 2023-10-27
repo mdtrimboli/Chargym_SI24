@@ -20,19 +20,21 @@ def Energy_Calculation(self):
         temperature[count, 0] = (np.mean(x_forecast[ii: ii + 59,0]))
         humidity[count, 0] = (np.mean(x_forecast[ii: ii + 59,1]))
         solar_radiation[count, 0] = (np.mean(x_forecast[ii: ii + 59,2]))
-        count = count+1
+        count = count+1         # Realiza y guarda el promedio de las magnitudes cada una hora.
 
     experiment_length = days_of_experiment * (60/minutes_of_timestep)*24
     Renewable = np.zeros([days_of_experiment,int(60/minutes_of_timestep)*48])
     Radiation = np.zeros([days_of_experiment, int(60 / minutes_of_timestep) * 48])
-    count = 0
+    count = 0           # Guarda información todos los días c/ media hora
+
     for ii in range(0, int(days_of_experiment)):
         for jj in range(0, int((60/minutes_of_timestep)*48)):
             scaling_PV = self.PV_Param['PV_Surface']*self.PV_Param['PV_effic']/1000
-            scaling_sol = 1.5
+            scaling_sol = 1.5                                                       # TODO: encontrar sentido a este factor
             xx = solar_radiation[count,0] * scaling_sol * scaling_PV * solar_flag
-            Radiation[ii, jj] = solar_radiation[count,0]
-            Renewable[ii, jj] = xx
+            # Energía PV = (radiación * factor solar * superficie * efic. PV) / 1000 [w]
+            Radiation[ii, jj] = solar_radiation[count,0]        # Radiation = Array de [dias, horas]
+            Renewable[ii, jj] = xx        # Renewable = Array de [dias, horas]
             count = count+1
 
     Price_day=[]
@@ -59,13 +61,18 @@ def Energy_Calculation(self):
         Price_day[4, :] = [0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
                            0.06, 0.06, 0.06, 0.1, 0.1, 0.1, 0.1]
 
-    Price_day = np.concatenate([Price_day,Price_day], axis=0)
+    Price_day = np.concatenate([Price_day,Price_day], axis=0)       # Concatena para obtener 48 valores (cada media hora)
     Price = np.zeros((days_of_experiment, 48))
     for ii in range(0, days_of_experiment):
-        Price[ii, :] = Price_day
+        Price[ii, :] = Price_day        # Guarda los precios en cada día del experimento
+        # TODO: Conviene hacer una elección aleatoria del Price_day?
 
     # for ii in range(1,days_of_experiment):
      #   Mixing_functions[ii] = sum(Solar[(ii - 1) * 24 + 1:(ii - 1) * 24 + 24]) / 16
 
     Consumed = np.zeros(np.shape(Renewable))
     return Consumed, Renewable, Price, Radiation
+    # Consumed: Array vacío de igual tamaño de Renewable para guardar energía renovable consumida
+    # Renewable: Array de [dias, horas] con energía que genera el panel fotovoltáico
+    # Price: Array de [dias, horas] con los precios en cada día del experimento
+    # Radiation: Array de [dias, horas] con la radiación solar disponible
