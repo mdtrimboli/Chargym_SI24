@@ -82,12 +82,17 @@ class ChargingEnv(gym.Env):
 
         [reward, Grid, Res_wasted, Cost_EV, self.BOC] = Simulate_Actions3.simulate_clever_control(self, actions)
 
+        # Almacenar datos en variables historicas
         self.Grid_Evol.append(Grid)
         self.Res_wasted_evol.append(Res_wasted)
         self.Penalty_Evol.append(Cost_EV)
         self.Cost_History.append(reward)
+
+        # Actualizar "t" y obtener observaciones
         self.timestep = self.timestep + 1
         conditions = self.get_obs()
+
+        # Si se completa el dia, finalizar y almacenar resultados
         if self.timestep == 24:
             self.done = True
             self.timestep = 0
@@ -130,10 +135,10 @@ class ChargingEnv(gym.Env):
             self.Penalty_Evol =[]
             self.BOC = self.Invalues["BOC"]
 
-        # TODO: Agregar comentarios siguientes:
-        # leave:
-        # Departure_hour:
-        # Battery:
+
+        # leave: Autos que se van
+        # Departure_hour: Hora que falta para salir
+        # Battery: Soc de cada auto
         [self.leave, Departure_hour, Battery] = Simulate_Station3.Simulate_Station(self)
 
         disturbances = np.array([self.Energy["Radiation"][0, self.timestep] / 1000, self.Energy["Price"][0, self.timestep] / 0.1])
