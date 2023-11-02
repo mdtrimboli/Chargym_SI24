@@ -20,8 +20,8 @@ args = parser.parse_args()
 env = gym.make(args.env)
 #Define which model to load
 
-models_dir1 = "RL/models/DDPG-1693570453"  # Modifiqué la dirección del modelo
-model_path1 = f"{models_dir1}/980000.zip"   # Saqué el .zip que se agrega posteriormente
+models_dir1 = "RL/models/DDPG-1698759045"  # Modifiqué la dirección del modelo
+model_path1 = f"{models_dir1}/100000.zip"
 model1 = DDPG.load(model_path1, env=env)
 
 

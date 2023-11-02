@@ -14,7 +14,7 @@ import time
 
 
 class ChargingEnv(gym.Env):
-    def __init__(self, price=1, solar=1):
+    def __init__(self, price=4, solar=1):
         # basic_model_parameters
         self.number_of_cars = 10            # Charging spots
         self.number_of_days = 1
@@ -34,7 +34,7 @@ class ChargingEnv(gym.Env):
                          'discharging_rate': discharging_rate}
 
         # Battery_parameters (Bateria interna de la estacion)
-        Battery_Capacity = 20       #TODO: Según la tabla 1 del paper debería ser 30
+        Battery_Capacity = 20
         Bcharging_effic = 0.91
         Bdischarging_effic = 0.91
         Bcharging_rate = 11
@@ -79,18 +79,24 @@ class ChargingEnv(gym.Env):
 
         [reward, Grid, Res_wasted, Cost_EV, self.BOC] = Simulate_Actions3.simulate_clever_control(self, actions)
 
-        self.Grid_Evol.append(Grid)     # Lo que consume de la red
-        self.Res_wasted_evol.append(Res_wasted)     # Energía renovable disponible
-        self.Penalty_Evol.append(Cost_EV)     # Costo 3 (por no cargar 100% los autos)
-        self.Cost_History.append(reward)        # Costo total
+        # Almacenar datos en variables historicas
+        self.Grid_Evol.append(Grid)
+        self.Res_wasted_evol.append(Res_wasted)
+        self.Penalty_Evol.append(Cost_EV)
+        self.Cost_History.append(reward)
+
+        # Actualizar "t" y obtener observaciones
         self.timestep = self.timestep + 1
         conditions = self.get_obs()
+
+        # Si se completa el dia, finalizar y almacenar resultados
         if self.timestep == 24:
             self.done = True
             self.timestep = 0
             Results = {'BOC': self.BOC, 'Grid_Final': self.Grid_Evol, 'RES_wasted' :self.Res_wasted_evol,
                        'Penalty_Evol':self.Penalty_Evol,
                        'Renewable': self.Energy['Renewable'],'Cost_History': self.Cost_History}
+            print("Consumo de la Red: ", Results['Grid_Final'])
             savemat(self.current_folder + '\Results.mat', {'Results': Results})
 
         self.info = {}
@@ -140,12 +146,15 @@ class ChargingEnv(gym.Env):
             self.Penalty_Evol =[]
             self.BOC = self.Invalues["BOC"]
 
-        # Leave: Autos que se van
+        # TODO: Agregar comentarios siguientes:
+        # leave:
+        # Departure_hour:
+        # Battery:
+
+        # leave: Autos que se van
         # Departure_hour: Hora que falta para salir
         # Battery: Soc de cada auto
-
         [self.leave, Departure_hour, Battery] = Simulate_Station3.Simulate_Station(self)
-        # Autos que se van en la siguiente hora, Hora que falta para salir de cada auto, Soc de cada auto.
 
         disturbances = np.array([self.Energy["Radiation"][0, self.timestep] / 1000, self.Energy["Price"][0, self.timestep] / 0.1])
         # disturbances = [Radiación Actual / 1000, Precio Actual / 0.1] --> para mapear a [0,1]

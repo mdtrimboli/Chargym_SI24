@@ -34,16 +34,21 @@ n_actions = env.action_space.shape[-1]
 param_noise = None
 action_noise = OrnsteinUhlenbeckActionNoise(mean=np.zeros(n_actions), sigma=float(0.5) * np.ones(n_actions))
 
-model = DDPG(MlpPolicy, env, verbose=1, action_noise=action_noise, tensorboard_log=logdir)
+model = DDPG(MlpPolicy, env, verbose=1, learning_rate=1e-6,
+             batch_size=64, action_noise=action_noise, tensorboard_log=logdir)
 
-# model.learn(total_timesteps=2000000, reset_num_timesteps=False, tb_log_name="DDPG")
-# model.save(f"{models_dir}/{2000000}")
+TIMESTEPS = 150000
+model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name="DDPG", log_interval=10)
+model.save(f"{models_dir}/{TIMESTEPS}")
 
 #This will save every 20000 steps the models
-TIMESTEPS = 20000
+#TIMESTEPS = 20000
+
+"""
 for i in range(1, 50):
     model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name="DDPG")
     model.save(f"{models_dir}/{TIMESTEPS * i}")
+"""
 
 
 
