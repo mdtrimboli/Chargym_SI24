@@ -14,7 +14,7 @@ import time
 
 
 class ChargingEnv(gym.Env):
-    def __init__(self, price=1, solar=1):
+    def __init__(self, price=4, solar=1):
         # basic_model_parameters
         self.number_of_cars = 10            # Charging spots
         self.number_of_days = 1
@@ -96,6 +96,7 @@ class ChargingEnv(gym.Env):
             Results = {'BOC': self.BOC, 'Grid_Final': self.Grid_Evol, 'RES_wasted' :self.Res_wasted_evol,
                        'Penalty_Evol':self.Penalty_Evol,
                        'Renewable': self.Energy['Renewable'],'Cost_History': self.Cost_History}
+            print("Consumo de la Red: ", Results['Grid_Final'])
             savemat(self.current_folder + '\Results.mat', {'Results': Results})
 
         self.info = {}
