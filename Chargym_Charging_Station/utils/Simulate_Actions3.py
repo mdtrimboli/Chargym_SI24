@@ -43,13 +43,15 @@ def simulate_clever_control(self, actions):
     # Calculation of energy utilization from the PV
     # Calculation of energy coming from Grid
     # ----------------------------------------------------------------------------
-    RES_avail = max([0,Renewable[0, hour] - Consumed[0, hour]])      # Energía renovable disponible
-    Total_charging = sum(P_charging)      # Energía demandada por EVs - energía entregada por EVs
+    RES_avail = max([0,Renewable[0, hour] - Consumed[0, hour]])      # Energía renovable disponible ---> Siempre usa el día 0!!!
+    # Energía generada - ¿energía consumida del PV o total?
+    # TODO: Nadie modifica Consumed, Renewable es c/ 1/2 hora y RES_avail cada 1 hora --> "Consumed" debería ser "Total_charging"
+    Total_charging = sum(P_charging)      # Potencia demandada y consumida por todos los autos
 
     # First Cost index
     # ----------------------------------------------------------------------------
     Grid_final = max([Total_charging - RES_avail, 0])      # Lo que se consume de la red
-    Cost_1 = Grid_final*self.Energy["Price"][0, hour]      # Lo que cuesta consumir de la red (positivo)
+    Cost_1 = Grid_final*self.Energy["Price"][0, hour]      # Lo que cuesta consumir de la red (positivo)---> Siempre usa el día 0!!!
 
     # Second Cost index
     # Penalty of wasted RES energy

@@ -10,7 +10,7 @@ def Energy_Calculation(self):
 
     contents = scipy.io.loadmat(current_folder+'Weather.mat')
     x_forecast = contents['mydata']
-
+    # TODO: x_forecast.shape = [4320, 3] con dos ciclos
     temperature = np.zeros([24*(days_of_experiment+1),1])
     humidity = np.zeros([24*(days_of_experiment+1),1])
     solar_radiation = np.zeros([24*(days_of_experiment+1),1])
