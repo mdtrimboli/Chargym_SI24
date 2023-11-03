@@ -96,7 +96,36 @@ class ChargingEnv(gym.Env):
             Results = {'BOC': self.BOC, 'Grid_Final': self.Grid_Evol, 'RES_wasted' :self.Res_wasted_evol,
                        'Penalty_Evol':self.Penalty_Evol,
                        'Renewable': self.Energy['Renewable'],'Cost_History': self.Cost_History}
-            print("Consumo de la Red: ", Results['Grid_Final'])
+            #------------------------------------------------------------------------------------------------------------
+
+            Generacion_pv = np.zeros([1, int(Results['Renewable'].shape[1] / 2)])
+            for ii in range(0, Results['Renewable'].shape[1], 2):  # Promedio de energía por cada hora
+                Generacion_pv[0, int(ii / 2)] = (Results['Renewable'][0][ii] + Results['Renewable'][0][ii + 1])
+            Consumo_pv = Generacion_pv - Results['RES_wasted']  # Energía consumida por PV = generada - sobrante
+            En_consumida_total = np.zeros(len(Results['Grid_Final']))
+            for ii in range(len(Results['Grid_Final'])):
+                En_consumida_total[ii] = Results['Grid_Final'][ii] + Results['RES_wasted'][ii]
+            Porcentaje_Red = np.zeros(len(En_consumida_total))
+            for ii in range(len(En_consumida_total)):
+                Porcentaje_Red[ii] = Results['Grid_Final'][ii] / En_consumida_total[ii]
+            Porcentaje_PV = np.zeros(len(En_consumida_total))
+            for ii in range(len(En_consumida_total)):
+                Porcentaje_PV[ii] = Consumo_pv[0][ii] / En_consumida_total[ii]
+            #print("Consumo de la Red: ", Results['Grid_Final'])     # Lo que se consume de la red
+            #print("Generación de PV: ", Generacion_pv[0])      # Energía generada por PV (cada hora)
+
+            #print("Consumo de energía del PV: ", Consumo_pv[0])        # Energía consumida del PV (cada media hora)
+            #print("Irradiación              : ", self.Energy['Radiation'])
+            #print("Generac de orig E. del PV: ", Results['Renewable'])
+            #print("Generac de energía del PV: ", Generacion_pv)
+            #print("Sobrante de Energía de PV: ", Results['RES_wasted'])
+
+            # print("SoC: ", Results['BOC'])      # Estado de carga de los autos las 24 hs
+            #print("Consumo de energía total: ", En_consumida_total)#En_consumida_total)
+            #print("Porcentaje carga RED: ", Porcentaje_Red)
+            #print("Porcentaje carga PV: ", Porcentaje_PV)
+
+            # ------------------------------------------------------------------------------------------------------------
             savemat(self.current_folder + '\Results.mat', {'Results': Results})
 
         self.info = {}
@@ -145,11 +174,6 @@ class ChargingEnv(gym.Env):
             self.Res_wasted_evol = []
             self.Penalty_Evol =[]
             self.BOC = self.Invalues["BOC"]
-
-        # TODO: Agregar comentarios siguientes:
-        # leave:
-        # Departure_hour:
-        # Battery:
 
         # leave: Autos que se van
         # Departure_hour: Hora que falta para salir
