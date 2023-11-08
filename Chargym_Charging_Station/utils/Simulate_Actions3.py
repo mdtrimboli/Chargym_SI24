@@ -1,16 +1,17 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import time
 
 
-def simulate_clever_control(self, actions):
+def simulate_clever_control(self, actions, BOC_ext):
     hour = self.timestep
-    Consumed = self.Energy['Consumed']                  # TODO: Chequear el self dado que no es una clase
+    Consumed = self.Energy['Consumed']
     Renewable = self.Energy['Renewable']
     present_cars = self.Invalues['present_cars']
-    #print(present_cars[:,hour])
 
     leave = self.leave
     BOC = self.BOC      # SOC
+
 
     P_charging = np.zeros(self.number_of_cars)
     # Calculation of demand based on actions
@@ -37,7 +38,6 @@ def simulate_clever_control(self, actions):
     for car in range(self.number_of_cars):
         if present_cars[car, hour] == 1:      # Si el auto está --> SoC próximo = SoC actual + Pdem/capacidad
             BOC[car, hour+1] = BOC[car, hour] + P_charging[car]/self.EV_Param['EV_capacity']
-            # TODO: Puede llegar a ser mayor que 1???
             # Pdem/capacidad es lo que se va a cargar la batería en la próxima hora
 
     # Calculation of energy utilization from the PV
@@ -53,6 +53,7 @@ def simulate_clever_control(self, actions):
     #Grid_final = max([Total_charging - RES_avail, 0])      # Lo que se consume de la red
     RES_Gen = max([0,Renewable[0, hour]])
 
+    RES_avail =  max([RES_Gen - Total_charging, 0])
     Grid_final = max([Total_charging - RES_Gen, 0])
     Cost_1 = Grid_final*self.Energy["Price"][0, hour]      # Lo que cuesta consumir de la red (positivo)---> Siempre usa el día 0!!!
 
