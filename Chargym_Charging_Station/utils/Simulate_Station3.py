@@ -11,7 +11,7 @@ def Simulate_Station(self):
     hour = self.timestep
 
 
-    # cálculo de qué coches salen ahora
+    # cálculo de la hora en que salen los EV
     leave = []
     if hour < 24:
         for car in range(number_of_cars):
@@ -26,10 +26,18 @@ def Simulate_Station(self):
             Departure_hour.append(0)        # Si el auto no está --> no tiene hora de salida
         else:
             for ii in range(len(Departure[car])):
+
+                # TODO: Departure muestra las horas que falta para que cada auto (mas de uno por puesto) salga de la estacion????
+                # TODO: Comprender mejor el paso a paso de esta parte
+
+                print(Departure[car][ii] - hour)
                 if hour < Departure[car][ii]:     # Si la hora que de salida > a la actual
                     Departure_hour.append(Departure[car][ii]-hour)       # --> Se guarda la cantidad de horas que falta para que salga de cada auto
+                    print("D-h: ", Departure_hour)
                     break
                     # Departure[car] tiene varias horas de salida para cada auto para un día
+
+
 
     # calculation of the BOC of each car
     Battery = []
