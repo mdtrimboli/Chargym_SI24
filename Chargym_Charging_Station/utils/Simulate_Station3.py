@@ -22,23 +22,22 @@ def Simulate_Station(self):
     # calculation of the hour each car is leaving
     Departure_hour = []
     for car in range(number_of_cars):
-        if present_cars[car,hour] == 0:
+        if present_cars[car, hour] == 0:
             Departure_hour.append(0)        # Si el auto no está --> no tiene hora de salida
         else:
             for ii in range(len(Departure[car])):
                 if hour < Departure[car][ii]:     # Si la hora que de salida > a la actual
                     Departure_hour.append(Departure[car][ii]-hour)       # --> Se guarda la cantidad de horas que falta para que salga de cada auto
                     break
-                    # TODO: Departure[car] tiene varias horas de salida para cada auto para un día?
-                    # Departura[car] tiene varias horas de salida para cada auto para un día
+                    # Departure[car] tiene varias horas de salida para cada auto para un día
 
     # calculation of the BOC of each car
     Battery = []
     for car in range(number_of_cars):
-        Battery.append(self.BOC[car,hour])      # Guarda en Battery[] los SoC de cada auto
+        Battery.append(self.BOC[car, hour])      # Guarda en Battery[] los SoC de cada auto
+    #############################################################
 
-
-    return leave,Departure_hour,Battery
+    return leave, Departure_hour, Battery
     # Leave: Autos que se van
     # Departure_hour: Hora que falta para salir
     # Battery: Soc de cada auto.

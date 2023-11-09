@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import time
 
 
-def simulate_clever_control(self, actions, BOC_ext):
+def simulate_clever_control(self, actions):
     hour = self.timestep
     Consumed = self.Energy['Consumed']
     Renewable = self.Energy['Renewable']
@@ -43,19 +43,19 @@ def simulate_clever_control(self, actions, BOC_ext):
     # Calculation of energy utilization from the PV
     # Calculation of energy coming from Grid
     # ----------------------------------------------------------------------------
-    RES_avail = max([0,Renewable[0, hour] - Consumed[0, hour]])      # Energía renovable disponible ---> Siempre usa el día 0!!!
-    # Energía generada - ¿energía consumida del PV o total?
-    # TODO: Nadie modifica Consumed, Renewable es c/ 1/2 hora y RES_avail cada 1 hora --> "Consumed" debería ser "Total_charging"
+    #RES_avail = max([0, Renewable[0, hour] - Consumed[0, hour]])      # Energía renovable disponible ---> Siempre usa el día 0!!!
+
     Total_charging = sum(P_charging)      # Potencia demandada y consumida por todos los autos
 
     # First Cost index
     # ----------------------------------------------------------------------------
-    #Grid_final = max([Total_charging - RES_avail, 0])      # Lo que se consume de la red
-    RES_Gen = max([0,Renewable[0, hour]])
+    # Grid_final = max([Total_charging - RES_avail, 0])      # Lo que se consume de la red
+    RES_Gen = max([0, Renewable[0, hour]])
 
-    RES_avail =  max([RES_Gen - Total_charging, 0])
+    RES_avail = max([RES_Gen - Total_charging, 0])
     Grid_final = max([Total_charging - RES_Gen, 0])
-    Cost_1 = Grid_final*self.Energy["Price"][0, hour]      # Lo que cuesta consumir de la red (positivo)---> Siempre usa el día 0!!!
+    Cost_1 = Grid_final*self.Energy["Price"][0, hour]       # Lo que cuesta consumir de la red (positivo)
+
 
     # Second Cost index
     # Penalty of wasted RES energy

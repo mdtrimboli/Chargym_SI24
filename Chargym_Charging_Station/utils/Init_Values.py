@@ -25,16 +25,15 @@ def InitialValues_per_day(self):
                 if arrival == 1 and hour <= 20:     # El auto puede llegar hasta las 20 hs
                     ran = random.randint(20, 50)
                     BOC[car, hour] = ran / 100      # Tiene una carga de entre 20% y 50%
-                    pointer=pointer+1
+                    pointer = pointer+1
                     Arrival_car.append(hour)
-                    upper_limit=min(hour + 10, 25)
+                    upper_limit = min(hour + 10, 25)
                     Departure_car.append(random.randint(hour+4,int(upper_limit)))
                     # El auto se queda desde 4 hasta 10 hs, siempre dentro del mismo día
+            ###########################################################################################################
 
-
-
-            if arrival == 1 and pointer > 0:        # Pone 1 en present_cars[car,hour] si ese auto está presente a esa hora
-                if (hour < Departure_car[pointer-1]):
+            if arrival == 1 and pointer > 0:    # Pone 1 en present_cars[car,hour] si ese auto está presente a esa hora
+                if hour < Departure_car[pointer-1]:
                     present = 1
                     present_cars[car,hour] = 1
                 else:
@@ -52,10 +51,9 @@ def InitialValues_per_day(self):
     for hour in range(24):
         evolution_of_cars[hour]=np.sum(present_cars[:,hour])
         # Muestra la cantidad de autos que hay en cada hora del día
+    ##################################################################
 
- 
-
-    return BOC, ArrivalT, DepartureT,evolution_of_cars,present_cars
+    return BOC, ArrivalT, DepartureT, evolution_of_cars, present_cars
     # BOC: SoC
     # ArrivalT: Hora de llegada de cada auto
     # DepartureT: Hora de salida de cada auto
