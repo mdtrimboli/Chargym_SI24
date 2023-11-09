@@ -29,6 +29,7 @@ def simulate_clever_control(self, actions):
         # P_charging[car] = 100 * actions[car] / 100 * max_charging_energy
 
         if present_cars[car, hour] == 1:      # Si el auto está --> Ec (4) del paper (Pdem)
+            # TODO: Divide en vez de multiplicar como en el paper
             P_charging[car] = 100*actions[car]/100*max_charging_energy
         else:
             P_charging[car] = 0
@@ -51,9 +52,12 @@ def simulate_clever_control(self, actions):
     # ----------------------------------------------------------------------------
     # Grid_final = max([Total_charging - RES_avail, 0])      # Lo que se consume de la red
     RES_Gen = max([0, Renewable[0, hour]])
-
-    RES_avail = max([RES_Gen - Total_charging, 0])
-    Grid_final = max([Total_charging - RES_Gen, 0])
+    if Total_charging >= 0:      # Solo se calcula el sobrante de energía PV y el consumo de la red si los autos consumieron erengía
+        RES_avail = max([RES_Gen - Total_charging, 0])
+        Grid_final = max([Total_charging - RES_Gen, 0])
+    else:
+        RES_avail = 0
+        Grid_final = 0
     Cost_1 = Grid_final*self.Energy["Price"][0, hour]       # Lo que cuesta consumir de la red (positivo)
 
 
@@ -72,7 +76,7 @@ def simulate_clever_control(self, actions):
         Cost_EV.append(((1-BOC[leave[ii], hour+1])*2)**2)       # Simulate_Station crea leave
         # BOC[leave[ii], hour+1] solo tiene en cuenta el SoC de los autos que se van a ir en la próxima hora
     Cost_3 = sum(Cost_EV)
-
+    # TODO: Existe un costo 4 que es la energía que sobra de los EV (Total_charging < 0)
     Cost = Cost_1 + Cost_3
 
     return Cost, Grid_final, RES_avail, Cost_3, BOC

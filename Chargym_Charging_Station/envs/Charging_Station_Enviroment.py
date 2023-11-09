@@ -98,33 +98,37 @@ class ChargingEnv(gym.Env):
                        'Renewable': self.Energy['Renewable'],'Cost_History': self.Cost_History}
             #------------------------------------------------------------------------------------------------------------
 
-            Generacion_pv = np.zeros([1, int(Results['Renewable'].shape[1] / 2)])
-            for ii in range(0, Results['Renewable'].shape[1], 2):  # Promedio de energía por cada hora
-                Generacion_pv[0, int(ii / 2)] = (Results['Renewable'][0][ii] + Results['Renewable'][0][ii + 1])
-            Consumo_pv = Generacion_pv - Results['RES_wasted']  # Energía consumida por PV = generada - sobrante
-            En_consumida_total = np.zeros(len(Results['Grid_Final']))
-            for ii in range(len(Results['Grid_Final'])):
-                En_consumida_total[ii] = Results['Grid_Final'][ii] + Results['RES_wasted'][ii]
+            Generacion_pv = Results['Renewable'][0][:24]
+            Consumo_pv = Generacion_pv - Results['RES_wasted'][:24]
+            En_consumida_total = Results['Grid_Final'] + Generacion_pv # En realidad En_consumida_total = Results['Grid_Final'] + Energía_consumida_PV
             Porcentaje_Red = np.zeros(len(En_consumida_total))
-            for ii in range(len(En_consumida_total)):
-                Porcentaje_Red[ii] = Results['Grid_Final'][ii] / En_consumida_total[ii]
             Porcentaje_PV = np.zeros(len(En_consumida_total))
             for ii in range(len(En_consumida_total)):
-                Porcentaje_PV[ii] = Consumo_pv[0][ii] / En_consumida_total[ii]
+                if En_consumida_total[ii] > 0:
+                    Porcentaje_Red[ii] = Results['Grid_Final'][ii] / En_consumida_total[ii]
+                    Porcentaje_PV[ii] = Generacion_pv[ii] / En_consumida_total[ii]
+                else:
+                    Porcentaje_Red[ii] = 0
+                    Porcentaje_PV[ii] = 0
+
+            horas = np.linspace(0,23,24)
             #print("Consumo de la Red: ", Results['Grid_Final'])     # Lo que se consume de la red
-            #print("Generación de PV: ", Generacion_pv[0])      # Energía generada por PV (cada hora)
+            #print("Generación de PV: ", Generacion_pv)      # Energía generada por PV (cada hora)
 
             #print("Consumo de energía del PV: ", Consumo_pv[0])        # Energía consumida del PV (cada media hora)
             #print("Irradiación              : ", self.Energy['Radiation'])
             #print("Generac de orig E. del PV: ", Results['Renewable'])
-            #print("Generac de energía del PV: ", Generacion_pv)
-            #print("Sobrante de Energía de PV: ", Results['RES_wasted'])
+            print("Generac de energía del PV: ", Generacion_pv)
+            print("Sobrante de Energía de PV: ", Results['RES_wasted'])
 
             # print("SoC: ", Results['BOC'])      # Estado de carga de los autos las 24 hs
-            #print("Consumo de energía total: ", En_consumida_total)#En_consumida_total)
+            print("Energía consumida pv: ", Consumo_pv)
+
             #print("Porcentaje carga RED: ", Porcentaje_Red)
             #print("Porcentaje carga PV: ", Porcentaje_PV)
-
+            #import matplotlib.pyplot as plt
+            #plt.plot(horas, Porcentaje_Red,'r')
+            #plt.plot(horas, Porcentaje_PV, 'g')
             # ------------------------------------------------------------------------------------------------------------
             savemat(self.current_folder + '\Results.mat', {'Results': Results})
 
