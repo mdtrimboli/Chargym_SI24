@@ -30,10 +30,8 @@ def Simulate_Station(self):
                 # TODO: Departure muestra las horas que falta para que cada auto (mas de uno por puesto) salga de la estacion????
                 # TODO: Comprender mejor el paso a paso de esta parte
 
-                print(Departure[car][ii] - hour)
                 if hour < Departure[car][ii]:     # Si la hora que de salida > a la actual
                     Departure_hour.append(Departure[car][ii]-hour)       # --> Se guarda la cantidad de horas que falta para que salga de cada auto
-                    print("D-h: ", Departure_hour)
                     break
                     # Departure[car] tiene varias horas de salida para cada auto para un día
 

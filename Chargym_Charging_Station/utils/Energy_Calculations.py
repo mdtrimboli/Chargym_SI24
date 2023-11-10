@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import scipy.io
 
 
@@ -65,7 +66,6 @@ def Energy_Calculation(self):
     Price = np.zeros((days_of_experiment, 48))
     for ii in range(0, days_of_experiment):
         Price[ii, :] = Price_day        # Guarda los precios en cada día del experimento
-        # TODO: Conviene hacer una elección aleatoria del Price_day?
 
     # for ii in range(1,days_of_experiment):
      #   Mixing_functions[ii] = sum(Solar[(ii - 1) * 24 + 1:(ii - 1) * 24 + 24]) / 16

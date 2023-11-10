@@ -8,7 +8,6 @@ def simulate_clever_control(self, actions):
     Consumed = self.Energy['Consumed']
     Renewable = self.Energy['Renewable']
     present_cars = self.Invalues['present_cars']
-
     leave = self.leave
     BOC = self.BOC      # SOC
 
@@ -27,10 +26,13 @@ def simulate_clever_control(self, actions):
 
         # P_charging[car] = actions[car]/100*max_charging_energy
         # P_charging[car] = 100 * actions[car] / 100 * max_charging_energy
-
         if present_cars[car, hour] == 1:      # Si el auto está --> Ec (4) del paper (Pdem)
-            # TODO: Divide en vez de multiplicar como en el paper
-            P_charging[car] = 100*actions[car]/100*max_charging_energy
+            # Divide en vez de multiplicar como en el paper
+            # P_charging[car] = 100*actions[car]/100*max_charging_energy
+            P_charging[car] = actions[car] * max_charging_energy
+            # P_charging[car] > 0 ----> Charging
+            # P_charging[car] < 0 ----> Discharging
+
         else:
             P_charging[car] = 0
 

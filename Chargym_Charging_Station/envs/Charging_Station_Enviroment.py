@@ -3,6 +3,7 @@ import os
 import sys
 import gym
 import pathlib
+import matplotlib.pyplot as plt
 from gym import spaces
 from gym.utils import seeding
 from scipy.io import loadmat, savemat
@@ -32,16 +33,6 @@ class ChargingEnv(gym.Env):
         self.EV_Param = {'charging_effic': charging_effic, 'EV_capacity': EV_capacity,
                          'discharging_effic': discharging_effic, 'charging_rate': charging_rate,
                          'discharging_rate': discharging_rate}
-
-        # Battery_parameters (Bateria interna de la estacion)
-        Battery_Capacity = 20
-        Bcharging_effic = 0.91
-        Bdischarging_effic = 0.91
-        Bcharging_rate = 11
-        Bdischarging_rate = 11
-        self.Bat_Param = {'Battery_Capacity': Battery_Capacity, 'Bcharging_effic': Bcharging_effic,
-                          'Bdischarging_effic': Bdischarging_effic, 'Bcharging_rate': Bcharging_rate,
-                          'Bdischarging_rate': Bdischarging_rate}
 
         # Renewable_Energy
         PV_Surface = 2.279 * 1.134 * 20     # = 51,68772 [m2]
@@ -124,9 +115,14 @@ class ChargingEnv(gym.Env):
             # print("SoC: ", Results['BOC'])      # Estado de carga de los autos las 24 hs
             print("Energía consumida pv: ", Consumo_pv)
 
+            plt.plot(Generacion_pv, label='Gen PV', color='green')
+            plt.plot(Results['RES_wasted'], label='Wasted', color='orange')
+            plt.plot(Consumo_pv, label='Consumed', color='red')
+            plt.show()
+
             #print("Porcentaje carga RED: ", Porcentaje_Red)
             #print("Porcentaje carga PV: ", Porcentaje_PV)
-            #import matplotlib.pyplot as plt
+            #
             #plt.plot(horas, Porcentaje_Red,'r')
             #plt.plot(horas, Porcentaje_PV, 'g')
             # ------------------------------------------------------------------------------------------------------------
