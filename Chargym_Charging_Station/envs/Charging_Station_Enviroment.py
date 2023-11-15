@@ -86,7 +86,7 @@ class ChargingEnv(gym.Env):
         if self.timestep == 24:
             self.done = True
             self.timestep = 0
-            Results = {'BOC': self.BOC, 'Grid_Final': self.Grid_Evol, 'RES_wasted' :self.Res_wasted_evol,
+            Results = {'BOC': self.BOC, 'Grid_Final': self.Grid_Evol, 'RES_wasted': self.Res_wasted_evol,
                        'Penalty_Evol':self.Penalty_Evol,
                        'Renewable': self.Energy['Renewable'],'Cost_History': self.Cost_History}
             #------------------------------------------------------------------------------------------------------------
@@ -124,6 +124,7 @@ class ChargingEnv(gym.Env):
             #plt.plot(Consumo_pv, label='Consumed', color='red')
             #plt.show()
 
+            """
             plt.plot(horas, En_consumida_total,'b', label = 'Consumo EVs')
             plt.plot(horas, Consumo_pv, 'g', label = 'Consumo PV')
 
@@ -131,6 +132,8 @@ class ChargingEnv(gym.Env):
             plt.plot(horas, Results['RES_wasted'][:24], 'pink', label='Energía sobrante PV')
             plt.legend(loc = 'lower left')
             plt.show()
+            """
+            # print("Energía consumida pv: ", Consumo_pv)
 
             # ------------------------------------------------------------------------------------------------------------
             savemat(self.current_folder + '\Results.mat', {'Results': Results})
