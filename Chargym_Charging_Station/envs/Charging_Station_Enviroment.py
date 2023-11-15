@@ -92,19 +92,18 @@ class ChargingEnv(gym.Env):
             #------------------------------------------------------------------------------------------------------------
 
             Generacion_pv = Results['Renewable'][0][:24]
-            Consumo_pv = Generacion_pv - Results['RES_wasted'][:24]
-            En_consumida_total = Results['Grid_Final'] + Generacion_pv # En_consumida_total = E. Consumida de la red + Energía consumida del panel
-            Porcentaje_Red = np.zeros(len(En_consumida_total))
-            Porcentaje_PV = np.zeros(len(En_consumida_total))
-            Energía_desp_EV = np.zeros(len(En_consumida_total))
-            for ii in range(len(En_consumida_total)):
-                if En_consumida_total[ii] >= 0:
-                    Porcentaje_Red[ii] = Results['Grid_Final'][ii] / En_consumida_total[ii]
-                    Porcentaje_PV[ii] = Generacion_pv[ii] / En_consumida_total[ii]
+            self.E_almac_pv = Generacion_pv - Results['RES_wasted']
+            En_almacenada_total = Results['Grid_Final'] + self.E_almac_pv # En_consumida_total = E. Consumida de la red + Energía consumida del panel
+            Porcentaje_Red = np.zeros(len(En_almacenada_total))
+            Porcentaje_PV = np.zeros(len(En_almacenada_total))
+            Energía_desp_EV = np.zeros(len(En_almacenada_total))
+            for ii in range(len(En_almacenada_total)):
+                if En_almacenada_total[ii] >= 0:
+                    Porcentaje_Red[ii] = Results['Grid_Final'][ii] / En_almacenada_total[ii]
+                    Porcentaje_PV[ii] = Generacion_pv[ii] / En_almacenada_total[ii]
                 else:
                     Porcentaje_Red[ii] = 0
                     Porcentaje_PV[ii] = 0
-                    Energía_desp_EV[ii] = -En_consumida_total[ii]
 
             horas = np.linspace(0,23,24)
             #print("Consumo de la Red: ", Results['Grid_Final'])     # Lo que se consume de la red
@@ -117,7 +116,8 @@ class ChargingEnv(gym.Env):
             #print("Sobrante de Energía de PV: ", Results['RES_wasted'])
 
             # print("SoC: ", Results['BOC'])      # Estado de carga de los autos las 24 hs
-            #print("Energía consumida pv: ", Consumo_pv)
+            #print("Energía consumida pv: ", self.Consumo_pv)
+            #print("Energía generada pv: ", Results['RES_wasted'])
 
             #plt.plot(Generacion_pv, label='Gen PV', color='green')
             #plt.plot(Results['RES_wasted'], label='Wasted', color='orange')
@@ -125,13 +125,14 @@ class ChargingEnv(gym.Env):
             #plt.show()
 
             """
-            plt.plot(horas, En_consumida_total,'b', label = 'Consumo EVs')
-            plt.plot(horas, Consumo_pv, 'g', label = 'Consumo PV')
+            #plt.plot(horas, En_consumida_total,'b', label = 'Consumo EVs')
+            #plt.plot(horas, Consumo_pv, 'g', label = 'Consumo PV')
 
-            plt.plot(horas, Results['Grid_Final'], 'r', label='Consumo RED')
-            plt.plot(horas, Results['RES_wasted'][:24], 'pink', label='Energía sobrante PV')
-            plt.legend(loc = 'lower left')
-            plt.show()
+            #plt.plot(horas, En_consumida_total, 'b', label='Energía consumida Total')
+            #plt.plot(horas, Results['Grid_Final'], 'r', label='Consumo RED')
+            #plt.plot(horas, Consumo_pv, 'g', label='Energía consumida PV')
+            #plt.legend(loc = 'upper left')
+            #plt.show()
             """
             # print("Energía consumida pv: ", Consumo_pv)
 

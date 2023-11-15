@@ -69,7 +69,17 @@ if SAVE:
 else:
     #np.savetxt("curves/Price.csv", ddpg.temp, delimiter=", ", fmt='% s')
     # TODO: Guardar variables electricas necesarias
-    pass
+    #Gráfico a) Reward
+
+    #Gráfico b) Evolución Almacenamiento Energía
+    np.savetxt("curves/Precio.csv", np.array([0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                              0.06, 0.06, 0.06, 0.1, 0.1, 0.1, 0.1]), delimiter=", ", fmt='% s')
+    np.savetxt("curves/E_almacenada_red.csv", env.Grid_Evol, delimiter=", ", fmt='% s')
+    np.savetxt("curves/E_almacenada_PV.csv", env.E_almac_pv, delimiter=", ", fmt='% s')
+    #gráfico c) Perfil de carga
+    np.savetxt("curves/Presencia_autos.csv", env.Invalues['present_cars'], delimiter=", ", fmt='% s')
+    np.savetxt("curves/Presencia_autos.csv", env.BOC, delimiter=", ", fmt='% s')
+
 
 
 
