@@ -55,6 +55,10 @@ ddpg = DDPG(env, actor, critic)
 
 if SAVE:
     ddpg.train()
+
+    directory = 'model'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     torch.save(ddpg._actor.state_dict(), 'model/actor_weights.pth')
     torch.save(ddpg._critic.state_dict(), 'model/critic_weights.pth')
 else:
@@ -63,14 +67,14 @@ else:
     ddpg.evaluate()
 
 if SAVE:
+    directory_2 = 'curves'
+    if not os.path.exists(directory_2):
+        os.makedirs(directory_2)
     np.savetxt("curves/Rew_DDPG.csv", ddpg.episodic_reward_buffer, delimiter=", ", fmt='% s')
     np.savetxt("curves/Len_DDPG.csv", ddpg.episodic_length_buffer, delimiter=", ", fmt='% s')
     #np.savetxt("curves/ALVConst_Eval_DDPG_SL.csv", ddpg.accum_lv_eval, delimiter=", ", fmt='% s')
 else:
     #np.savetxt("curves/Price.csv", ddpg.temp, delimiter=", ", fmt='% s')
-    # TODO: Guardar variables electricas necesarias
-    #Gráfico a) Reward
-
     #Gráfico b) Evolución Almacenamiento Energía
     np.savetxt("curves/Precio.csv", np.array([0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
                               0.06, 0.06, 0.06, 0.1, 0.1, 0.1, 0.1]), delimiter=", ", fmt='% s')

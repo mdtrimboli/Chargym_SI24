@@ -57,80 +57,51 @@ arguments:
       help: "Actor network parameters."
       properties:
         - name: "layers"
-          default: [128, 64]
+          default: [356, 128]   # default: [128, 64]
         - name: "init_bound"
           default: 0.003
     - name: "critic"
       help: "Critic network parameters."
       properties:
         - name: "layers"
-          default: [64, 128, 32]
+          default: [356, 128, 32]  #default: [64, 128, 32]
         - name: "init_bound"
           default: 0.003
     - name: "trainer"
       help: "Training parameters."
       properties:
         - name: "epochs"
-          default: 100
+          default: 200
         - name: "steps_per_epoch"
-          default: 6000
+          default: 1200
         - name: "evaluation_steps"
-          default: 1500
+          default: 1200
         - name: "batch_size"
-          default: 256
+          default: 512
         - name: "max_episode_length"
           default: 300
         - name: "replay_buffer_size"
-          default: 1000000
+          default: 10000000
         - name: "discount_factor"
           default: 0.99
         - name: "polyak"
           default: 0.995
         - name: "actor_lr"
-          default: 0.001
+          default: 0.0001    #0.00001
         - name: "critic_lr"
-          default: 0.001
+          default: 0.0001    #0.00001
         - name: "start_steps"
           default: 500
         - name: "action_noise_range"
           default: 0.01
         - name: "use_gpu"
-          default: false
+          default: true
         - name: "reward_scale"
           default: 1
         - name: "max_updates_per_episode"
           default: 10
         - name: "min_buffer_fill"
-          default: 2000
-  - name: "safety_layer"
-    help: "Safety layer configuration."
-    properties:
-      - name: "constraint_model"
-        help: "Hyperparameters for constraint model (g)"
-        properties:
-          - name: "layers"
-            default: [10, 10]
-          - name: "init_bound"
-            default: 0.003
-      - name: "trainer"
-        help: "Constraint model training parameters"
-        properties:
-          - name: "batch_size"
-            default: 256
-          - name: "lr"
-            default: 0.0001
-          - name: "max_episode_length"
-            default: 300
-          - name: "steps_per_epoch"
-            default: 6000
-          - name: "epochs"
-            default: 25
-          - name: "evaluation_steps"
-            default: 1500
-          - name: "replay_buffer_size"
-            default: 1000000
-          - name: "use_gpu"
-            default: false
+          default: 200  #def: 2000
   - name: "main"
     help: "Safe-Explorer driver properties."
     properties:
@@ -139,7 +110,3 @@ arguments:
         properties:
           - name: "seed"
             default: 0
-          - name: "task"
-            default: "ballnd"
-          - name: "use_safety_layer"
-            default: true

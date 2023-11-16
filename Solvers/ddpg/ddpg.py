@@ -21,6 +21,8 @@ class DDPG:
         self._critic = critic
 
         self._config = Config.get().ddpg.trainer
+        self.episodic_reward_buffer = []
+        self.episodic_length_buffer = []
 
         self._initialize_target_networks()
         self._initialize_optimizers()
@@ -38,11 +40,17 @@ class DDPG:
         self._eval_global_step = 0
 
         if self._config.use_gpu:
+            print("CUDA Activated")
             self._cuda()
 
     def _as_tensor(self, ndarray, requires_grad=False):
         tensor = torch.Tensor(ndarray)
         tensor.requires_grad = requires_grad
+
+        if self._config.use_gpu:
+            self._cuda()
+            tensor = tensor.cuda()
+
         return tensor
 
     def _initialize_target_networks(self):
@@ -66,9 +74,9 @@ class DDPG:
         # Action + random gaussian noise (as recommended in spining up)
         action = self._actor(self._as_tensor(self._flatten_dict(observation)))
         if is_training:
-            action += self._config.action_noise_range * torch.randn(self._env.action_space.shape)
+            action += self._config.action_noise_range * torch.randn(self._env.action_space.shape).cuda()
 
-        action = action.data.numpy()
+        action = action.cpu().data.numpy()
 
         return action
 
@@ -159,6 +167,10 @@ class DDPG:
             episode_length += 1
             
             if done or (episode_length == self._config.max_episode_length):
+
+                self.episodic_reward_buffer.append(episode_reward)
+                self.episodic_length_buffer.append(episode_length)
+
                 episode_rewards.append(episode_reward)
                 episode_lengths.append(episode_length)
                 episode_actions.append(episode_action / episode_length)
