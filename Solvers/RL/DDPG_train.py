@@ -8,6 +8,8 @@ import time
 import torch
 
 from functional import seq
+from datetime import datetime
+
 from Solvers.ddpg.core.config import Config
 from Solvers.ddpg.actor import Actor
 from Solvers.ddpg.critic import Critic
@@ -23,6 +25,9 @@ from stable_baselines3.common.evaluation import evaluate_policy
 
 SAVE = True     # True para Guardar - False para Cargar modelo
 
+
+fecha_actual = datetime.now().date()
+fecha_carga = fecha_actual
 
 config = Config.get().main.trainer
 models_dir = f"models/DDPG-{int(time.time())}"
@@ -59,11 +64,11 @@ if SAVE:
     directory = 'model'
     if not os.path.exists(directory):
         os.makedirs(directory)
-    torch.save(ddpg._actor.state_dict(), 'model/actor_weights.pth')
-    torch.save(ddpg._critic.state_dict(), 'model/critic_weights.pth')
+    torch.save(ddpg._actor.state_dict(), f'model/actor_weights_{fecha_actual}.pth')
+    torch.save(ddpg._critic.state_dict(), f'model/critic_weights_{fecha_actual}.pth')
 else:
-    ddpg._actor.load_state_dict(torch.load('model/actor_weights.pth'))
-    ddpg._critic.load_state_dict(torch.load('model/critic_weights.pth'))
+    ddpg._actor.load_state_dict(torch.load(f'model/actor_weights_{fecha_carga}.pth'))
+    ddpg._critic.load_state_dict(torch.load(f'model/critic_weights_{fecha_carga}.pth'))
     ddpg.evaluate()
 
 if SAVE:
@@ -71,7 +76,6 @@ if SAVE:
     if not os.path.exists(directory_2):
         os.makedirs(directory_2)
     np.savetxt("curves/Rew_DDPG.csv", ddpg.episodic_reward_buffer, delimiter=", ", fmt='% s')
-    np.savetxt("curves/Len_DDPG.csv", ddpg.episodic_length_buffer, delimiter=", ", fmt='% s')
     #np.savetxt("curves/ALVConst_Eval_DDPG_SL.csv", ddpg.accum_lv_eval, delimiter=", ", fmt='% s')
 else:
     #np.savetxt("curves/Price.csv", ddpg.temp, delimiter=", ", fmt='% s')

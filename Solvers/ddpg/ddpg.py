@@ -42,6 +42,12 @@ class DDPG:
         if self._config.use_gpu:
             print("CUDA Activated")
             self._cuda()
+            self._device = torch.device('cuda:0')
+            print(self._device)
+        else:
+            print("CPU Only")
+            self._device = torch.device('cpu')
+            print(self._device)
 
     def _as_tensor(self, ndarray, requires_grad=False):
         tensor = torch.Tensor(ndarray)
@@ -74,7 +80,7 @@ class DDPG:
         # Action + random gaussian noise (as recommended in spining up)
         action = self._actor(self._as_tensor(self._flatten_dict(observation)))
         if is_training:
-            action += self._config.action_noise_range * torch.randn(self._env.action_space.shape).cuda()
+            action += self._config.action_noise_range * torch.randn(self._env.action_space.shape).to(self._device)
 
         action = action.cpu().data.numpy()
 

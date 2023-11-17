@@ -71,7 +71,7 @@ arguments:
       help: "Training parameters."
       properties:
         - name: "epochs"
-          default: 200
+          default: 400
         - name: "steps_per_epoch"
           default: 1200
         - name: "evaluation_steps"
@@ -95,7 +95,7 @@ arguments:
         - name: "action_noise_range"
           default: 0.01
         - name: "use_gpu"
-          default: true
+          default: false
         - name: "reward_scale"
           default: 1
         - name: "max_updates_per_episode"
