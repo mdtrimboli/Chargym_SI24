@@ -3,17 +3,17 @@ import Chargym_Charging_Station
 import argparse
 
 import numpy
-from stable_baselines3 import DDPG
-from stable_baselines3.common.noise import NormalActionNoise
+
+
 import gym
 import numpy as np
 import os
 
-from stable_baselines3 import PPO
+from Solvers.RL.ppo.ppo import PPO
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
-from stable_baselines3 import DDPG, PPO
-from stable_baselines3.common.evaluation import evaluate_policy
+
 import time
+
 models_dir = f"models/PPO-{int(time.time())}"
 logdir = f"logs/PPO-{int(time.time())}"
 

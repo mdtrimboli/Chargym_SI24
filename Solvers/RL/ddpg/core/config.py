@@ -1,11 +1,9 @@
 import argparse
 import copy
-import os
-import sys
 import yaml
 
-from Solvers.ddpg.utils.namespacify import Namespacify
-from Solvers.ddpg.utils.path import get_project_root_dir
+from Solvers.RL.ddpg.utils.namespacify import Namespacify
+from Solvers.RL.ddpg.utils.path import get_project_root_dir
 
 
 class Config:

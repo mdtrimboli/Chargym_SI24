@@ -1,15 +1,15 @@
 import copy
 from datetime import datetime
-from functional import seq
 import numpy as np
 import time
 import torch
 import torch.nn.functional as F
 from torch.optim import Adam
 
-from Solvers.ddpg.core.config import Config
-from Solvers.ddpg.core.replay_buffer import ReplayBuffer
-from Solvers.ddpg.utils.list import for_each, select_with_predicate
+from Solvers.RL.ddpg.core.config import Config
+from Solvers.RL.ddpg.core.replay_buffer import ReplayBuffer
+from Solvers.RL.ddpg.utils.list import for_each
+
 
 class DDPG:
     def __init__(self,

@@ -1,8 +1,8 @@
 import torch
 
-from Solvers.ddpg.core.config import Config
-from Solvers.ddpg.core.net import Net
-from Solvers.ddpg.utils.utils import init_fan_in_uniform
+from Solvers.RL.ddpg.core.config import Config
+from Solvers.RL.ddpg.core.net import Net
+from Solvers.RL.ddpg.utils.utils import init_fan_in_uniform
 
 
 class Actor(Net):

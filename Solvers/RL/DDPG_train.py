@@ -1,27 +1,19 @@
 import gym
-import Chargym_Charging_Station
-import argparse
-import gym
 import numpy as np
 import os
 import time
 import torch
 
-from functional import seq
 from datetime import datetime
 
-from Solvers.ddpg.core.config import Config
-from Solvers.ddpg.actor import Actor
-from Solvers.ddpg.critic import Critic
-from Solvers.ddpg.ddpg import DDPG
+from Solvers.RL.ddpg.core.config import Config
+from Solvers.RL.ddpg.actor import Actor
+from Solvers.RL.ddpg.critic import Critic
+from Solvers.RL.ddpg.ddpg import DDPG
 
 #from stable_baselines3 import DDPG
-from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
-from stable_baselines3.ddpg.policies import MlpPolicy
-from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
-from stable_baselines3.common.evaluation import evaluate_policy
-
+from stable_baselines3.common.noise import OrnsteinUhlenbeckActionNoise
 
 SAVE = True     # True para Guardar - False para Cargar modelo
 
