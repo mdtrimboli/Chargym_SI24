@@ -3,6 +3,7 @@ import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 import gym
 import argparse
+import os
 
 from Solvers import check_main
 from Solvers.RL.ppo.normalization import Normalization, RewardScaling
@@ -10,6 +11,49 @@ from Solvers.RL.ppo.replay_buffer import ReplayBuffer
 from Solvers.RL.ppo.ppo_continuous import PPO_continuous
 
 from stable_baselines3.common.env_checker import check_env
+
+
+import torch
+import os
+
+def save_models(actor, critic, directory, actor_filename='actor.pth', critic_filename='critic.pth'):
+    """
+    Guarda los modelos del actor y del crítico en el directorio especificado.
+
+    Args:
+    - actor: Modelo del actor de PyTorch.
+    - critic: Modelo del crítico de PyTorch.
+    - directory: Directorio donde se guardarán los modelos.
+    - actor_filename: Nombre del archivo para el modelo del actor.
+    - critic_filename: Nombre del archivo para el modelo del crítico.
+    """
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    actor_path = os.path.join(directory, actor_filename)
+    critic_path = os.path.join(directory, critic_filename)
+
+    torch.save(actor.state_dict(), actor_path)
+    torch.save(critic.state_dict(), critic_path)
+
+def load_models(actor, critic, directory, actor_filename='actor.pth', critic_filename='critic.pth'):
+    """
+    Carga los modelos del actor y del crítico desde el directorio especificado.
+
+    Args:
+    - actor: Modelo del actor de PyTorch.
+    - critic: Modelo del crítico de PyTorch.
+    - directory: Directorio desde donde se cargarán los modelos.
+    - actor_filename: Nombre del archivo para el modelo del actor.
+    - critic_filename: Nombre del archivo para el modelo del crítico.
+    """
+    actor_path = os.path.join(directory, actor_filename)
+    critic_path = os.path.join(directory, critic_filename)
+
+    actor.load_state_dict(torch.load(actor_path))
+    critic.load_state_dict(torch.load(critic_path))
+
+
 
 
 def evaluate_policy(args, env, agent, state_norm):
@@ -69,7 +113,7 @@ def main(args, number, seed):
     agent = PPO_continuous(args)
 
     # Build a tensorboard
-    writer = SummaryWriter(log_dir='runs/PPO_continuous/env_{}_{}_number_{}_seed_{}'.format(env_name, args.policy_dist, number, seed))
+    # writer = SummaryWriter(log_dir='runs/PPO_continuous/env_{}_{}_number_{}_seed_{}'.format(env_name, args.policy_dist, number, seed))
 
     state_norm = Normalization(shape=args.state_dim)  # Trick 2:state normalization
     if args.use_reward_norm:  # Trick 3:reward normalization
@@ -125,21 +169,27 @@ def main(args, number, seed):
                 evaluate_reward = evaluate_policy(args, env_evaluate, agent, state_norm)
                 evaluate_rewards.append(evaluate_reward)
                 print("evaluate_num:{} \t evaluate_reward:{} \t".format(evaluate_num, evaluate_reward))
-                writer.add_scalar('step_rewards_{}'.format(env_name), evaluate_rewards[-1], global_step=total_steps)
+                #writer.add_scalar('step_rewards_{}'.format(env_name), evaluate_rewards[-1], global_step=total_steps)
                 # Save the rewards
+                directory = 'data'
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
                 if evaluate_num % args.save_freq == 0:
-                    np.save('./data_train/PPO_continuous_{}_env_{}_number_{}_seed_{}.npy'.format(args.policy_dist, env_name, number, seed), np.array(evaluate_rewards))
-
+                    np.save('data/PPO_continuous_{}_env_{}_number_{}_seed_{}.npy'.format(args.policy_dist, env_name, number, seed), np.array(evaluate_rewards))
+    directory_2 = 'curves'
+    if not os.path.exists(directory_2):
+        os.makedirs(directory_2)
+    np.savetxt("curves/Rew_PPO.csv", evaluate_rewards, delimiter=", ", fmt='% s')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Hyperparameters Setting for ppo-continuous")
-    parser.add_argument("--max_train_steps", type=int, default=int(3e6), help=" Maximum number of training steps")
-    parser.add_argument("--evaluate_freq", type=float, default=5e3, help="Evaluate the policy every 'evaluate_freq' steps")
-    parser.add_argument("--save_freq", type=int, default=20, help="Save frequency")
+    parser.add_argument("--max_train_steps", type=int, default=int(480000), help=" Maximum number of training steps")
+    parser.add_argument("--evaluate_freq", type=float, default=24, help="Evaluate the policy every 'evaluate_freq' steps")
+    parser.add_argument("--save_freq", type=int, default=1200, help="Save frequency")
     parser.add_argument("--policy_dist", type=str, default="Gaussian", help="Beta or Gaussian")
     parser.add_argument("--batch_size", type=int, default=2048, help="Batch size")
     parser.add_argument("--mini_batch_size", type=int, default=64, help="Minibatch size")
-    parser.add_argument("--hidden_width", type=int, default=64, help="The number of neurons in hidden layers of the neural network")
+    parser.add_argument("--hidden_width", type=int, default=128, help="The number of neurons in hidden layers of the neural network")
     parser.add_argument("--lr_a", type=float, default=3e-4, help="Learning rate of actor")
     parser.add_argument("--lr_c", type=float, default=3e-4, help="Learning rate of critic")
     parser.add_argument("--gamma", type=float, default=0.99, help="Discount factor")
@@ -160,3 +210,18 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main(args, number=1, seed=10)
+
+
+## TODO: Ver donde colocar el siguiente fragmento
+    # Ejemplo de uso:
+    # Suponiendo que tienes modelos de actor y crítico ya creados y entrenados
+    # actor_model y critic_model son instancias de torch.nn.Module
+    # y tienes un directorio llamado 'models' donde deseas guardar y cargar los modelos.
+
+    # Guardar modelos
+    save_models(actor_model, critic_model, 'models')
+
+    # Cargar modelos
+    loaded_actor_model = ActorModel()  # Reemplaza ActorModel con la clase real del actor
+    loaded_critic_model = CriticModel()  # Reemplaza CriticModel con la clase real del crítico
+    load_models(loaded_actor_model, loaded_critic_model, 'models')

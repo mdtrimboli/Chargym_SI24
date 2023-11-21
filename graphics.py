@@ -13,9 +13,12 @@ actual_date = datetime.now().date()
 ### COMPARACION DE REWARD
 
 rew_curves_DDPG = open('Solvers/RL/curves/Rew_DDPG.csv', 'rb')
+rew_curves_PPO = open('Solvers/RL/curves/Rew_PPO.csv', 'rb')
 data_DDPG = gaussian_filter1d(loadtxt(rew_curves_DDPG, delimiter=","), sigma=5)
+data_PPO = gaussian_filter1d(loadtxt(rew_curves_PPO, delimiter=","), sigma=5)
 
 plt.plot(data_DDPG, label='DDPG', color='tab:red')
+plt.plot(data_PPO, label='PPO', color='tab:blue')
 
 plt.legend(loc="lower right")
 plt.xlabel("Training Episodes")
