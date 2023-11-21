@@ -25,7 +25,7 @@ model_path1 = f"{models_dir1}/100000.zip"
 model1 = DDPG.load(model_path1, env=env)
 
 
-models_dir2="RL/models/PPO-1693578854"
+models_dir2="RL/models/ppo-1693578854"
 model_path2=f"{models_dir2}/980000.zip"
 model2 = PPO.load(model_path2, env=env)
 
@@ -56,7 +56,7 @@ for ep in range(episodes):
 
     final_reward_DDPG[ep] = sum(rewards_list_DDPG)
 
-    # PPO
+    # ppo
     obs = env.reset(reset_flag=1)
     done = False
     while not done:
@@ -90,7 +90,7 @@ plt.plot(final_reward_PPO)
 plt.plot(final_reward_rbc)
 plt.xlabel('Evaluation episodes')
 plt.ylabel('Reward')
-plt.legend(['DDPG', 'PPO', 'RBC'])
+plt.legend(['DDPG', 'ppo', 'RBC'])
 
 plt.show()
 

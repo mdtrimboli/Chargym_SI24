@@ -6,6 +6,7 @@ import torch
 
 from datetime import datetime
 
+from Solvers import check_main
 from Solvers.RL.ddpg.core.config import Config
 from Solvers.RL.ddpg.actor import Actor
 from Solvers.RL.ddpg.critic import Critic
