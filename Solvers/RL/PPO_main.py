@@ -1,22 +1,16 @@
-import torch
 import numpy as np
-from torch.utils.tensorboard import SummaryWriter
 import gym
 import argparse
 import os
-
+import torch
 from Solvers import check_main
+from stable_baselines3.common.env_checker import check_env
 from Solvers.RL.ppo.normalization import Normalization, RewardScaling
 from Solvers.RL.ppo.replay_buffer import ReplayBuffer
 from Solvers.RL.ppo.ppo_continuous import PPO_continuous
 
-from stable_baselines3.common.env_checker import check_env
 
-
-import torch
-import os
-
-def save_models(actor, critic, directory, actor_filename='actor.pth', critic_filename='critic.pth'):
+def save_models(actor, critic, directory, actor_filename='ppo_actor.pth', critic_filename='ppo_critic.pth'):
     """
     Guarda los modelos del actor y del crítico en el directorio especificado.
 
@@ -36,6 +30,7 @@ def save_models(actor, critic, directory, actor_filename='actor.pth', critic_fil
     torch.save(actor.state_dict(), actor_path)
     torch.save(critic.state_dict(), critic_path)
 
+
 def load_models(actor, critic, directory, actor_filename='actor.pth', critic_filename='critic.pth'):
     """
     Carga los modelos del actor y del crítico desde el directorio especificado.
@@ -52,8 +47,6 @@ def load_models(actor, critic, directory, actor_filename='actor.pth', critic_fil
 
     actor.load_state_dict(torch.load(actor_path))
     critic.load_state_dict(torch.load(critic_path))
-
-
 
 
 def evaluate_policy(args, env, agent, state_norm):
@@ -86,6 +79,8 @@ def main(args, number, seed):
     env = gym.make('ChargingEnv-v0')
     env_evaluate = gym.make('ChargingEnv-v0')  # When evaluating the policy, we need to rebuild an environment
 
+    # It will check your custom environment and output additional warnings if needed
+    #check_main(env)
 
     # Set random seed
     env.seed(seed)
@@ -180,6 +175,15 @@ def main(args, number, seed):
     if not os.path.exists(directory_2):
         os.makedirs(directory_2)
     np.savetxt("curves/Rew_PPO.csv", evaluate_rewards, delimiter=", ", fmt='% s')
+    SAVE = True
+
+
+    if SAVE:
+        # Guardar modelos
+        save_models(agent.actor, agent.critic, 'model')
+    else:
+        pass
+        # TODO: Armar una clase que cargue los modelos de torch
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Hyperparameters Setting for ppo-continuous")
@@ -210,18 +214,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main(args, number=1, seed=10)
-
-
-## TODO: Ver donde colocar el siguiente fragmento
-    # Ejemplo de uso:
-    # Suponiendo que tienes modelos de actor y crítico ya creados y entrenados
-    # actor_model y critic_model son instancias de torch.nn.Module
-    # y tienes un directorio llamado 'models' donde deseas guardar y cargar los modelos.
-
-    # Guardar modelos
-    save_models(actor_model, critic_model, 'models')
-
-    # Cargar modelos
-    loaded_actor_model = ActorModel()  # Reemplaza ActorModel con la clase real del actor
-    loaded_critic_model = CriticModel()  # Reemplaza CriticModel con la clase real del crítico
-    load_models(loaded_actor_model, loaded_critic_model, 'models')

@@ -81,19 +81,19 @@ arguments:
         - name: "max_episode_length"
           default: 300
         - name: "replay_buffer_size"
-          default: 10000000
+          default: 100000000   #10000000
         - name: "discount_factor"
-          default: 0.99
+          default: 0.95 #0.99
         - name: "polyak"
           default: 0.995
         - name: "actor_lr"
-          default: 0.0001    #0.00001
+          default: 0.0001    #0.0001
         - name: "critic_lr"
-          default: 0.0001    #0.00001
+          default: 0.0001    #0.0001
         - name: "start_steps"
-          default: 500
+          default: 500  #500
         - name: "action_noise_range"
-          default: 0.01
+          default: 0.1   #0.01
         - name: "use_gpu"
           default: false
         - name: "reward_scale"

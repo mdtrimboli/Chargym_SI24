@@ -23,6 +23,7 @@ class ChargingEnv(gym.Env):
         self.price_flag = price             # Curva de precio elegida
         self.solar_flag = solar             # Habilitacion del Panel PV
         self.done = False
+        self.Grid_Evol_mem = []
 
         # EV_parameters
         EV_capacity = 30
@@ -74,6 +75,7 @@ class ChargingEnv(gym.Env):
         [reward, Grid, Res_wasted, Cost_EV, self.BOC] = Simulate_Actions3.simulate_clever_control(self, actions)
 
         # Almacenar datos en variables historicas
+        self.Grid_Evol_mem.append(Grid)
         self.Grid_Evol.append(Grid)
         self.Res_wasted_evol.append(Res_wasted)
         self.Penalty_Evol.append(Cost_EV)
