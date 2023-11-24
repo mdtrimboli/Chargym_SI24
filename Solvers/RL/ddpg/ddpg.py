@@ -168,7 +168,7 @@ class DDPG:
         for step in range(self._config.evaluation_steps):
             action = self._get_action(observation, is_training=False)
             episode_action += np.absolute(action)
-            observation, reward, done, _ = self._env.step(action)
+            observation, reward, done, info = self._env.step(action)
             episode_reward += reward
             episode_length += 1
             
@@ -176,6 +176,9 @@ class DDPG:
 
                 self.episodic_reward_buffer.append(episode_reward)
                 self.episodic_length_buffer.append(episode_length)
+
+                self.SOC = info['SOC']
+                self.Presence = info['Presence']
 
                 episode_rewards.append(episode_reward)
                 episode_lengths.append(episode_length)

@@ -75,7 +75,7 @@ arguments:
         - name: "steps_per_epoch"
           default: 1200
         - name: "evaluation_steps"
-          default: 1200
+          default: 24
         - name: "batch_size"
           default: 512
         - name: "max_episode_length"

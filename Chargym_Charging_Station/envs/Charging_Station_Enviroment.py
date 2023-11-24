@@ -24,6 +24,7 @@ class ChargingEnv(gym.Env):
         self.solar_flag = solar             # Habilitacion del Panel PV
         self.done = False
         self.Grid_Evol_mem = []
+        self.SOC = []
 
         # EV_parameters
         EV_capacity = 30
@@ -74,7 +75,10 @@ class ChargingEnv(gym.Env):
 
         [reward, Grid, Res_wasted, Cost_EV, self.BOC] = Simulate_Actions3.simulate_clever_control(self, actions)
 
+        self.SOC = self.BOC
+
         # Almacenar datos en variables historicas
+
         self.Grid_Evol_mem.append(Grid)
         self.Grid_Evol.append(Grid)
         self.Res_wasted_evol.append(Res_wasted)
@@ -142,7 +146,7 @@ class ChargingEnv(gym.Env):
             # ------------------------------------------------------------------------------------------------------------
             savemat(self.current_folder + '\Results.mat', {'Results': Results})
 
-        self.info = {}
+        self.info = {'SOC':self.SOC, 'Presence': self.Invalues['present_cars']}
         return conditions, -reward, self.done, self.info        # Devuelve la observación, - (el costo), y si terminó los 24 steps
 
     def reset(self, reset_flag=0):

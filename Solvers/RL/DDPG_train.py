@@ -19,7 +19,7 @@ from stable_baselines3.common.noise import OrnsteinUhlenbeckActionNoise
 
 def main():
 
-    SAVE = True     # True para Guardar - False para Cargar modelo
+    SAVE = False     # True para Guardar - False para Cargar modelo
 
 
     fecha_actual = datetime.now().date()
@@ -63,8 +63,8 @@ def main():
         torch.save(ddpg._actor.state_dict(), f'model/ddpg_actor_{fecha_actual}.pth')
         torch.save(ddpg._critic.state_dict(), f'model/ddpg_critic_{fecha_actual}.pth')
     else:
-        ddpg._actor.load_state_dict(torch.load(f'model/ddpg_actor_{fecha_actual}.pth'))
-        ddpg._critic.load_state_dict(torch.load(f'model/ddpg_critic_{fecha_actual}.pth'))
+        ddpg._actor.load_state_dict(torch.load(f'model/ddpg_actor.pth'))
+        ddpg._critic.load_state_dict(torch.load(f'model/ddpg_critic.pth'))
         ddpg.evaluate()
 
     if SAVE:
@@ -76,13 +76,16 @@ def main():
     else:
         #np.savetxt("curves/Price.csv", ddpg.temp, delimiter=", ", fmt='% s')
         #Gráfico b) Evolución Almacenamiento Energía
-        np.savetxt("curves/Precio.csv", np.array([0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
-                                  0.06, 0.06, 0.06, 0.1, 0.1, 0.1, 0.1]), delimiter=", ", fmt='% s')
+        np.savetxt("curves/Precio.csv", np.array([0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.1, 0.1,
+                                                  0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.06, 0.06, 0.06, 0.1, 0.1, 0.1, 0.1]),
+                   delimiter=", ", fmt='% s')
         np.savetxt("curves/E_almacenada_red.csv", env.Grid_Evol_mem, delimiter=", ", fmt='% s')
         np.savetxt("curves/E_almacenada_PV.csv", env.E_almac_pv, delimiter=", ", fmt='% s')
         #gráfico c) Perfil de carga
-        np.savetxt("curves/Presencia_autos.csv", env.Invalues['present_cars'], delimiter=", ", fmt='% s')
-        np.savetxt("curves/SOC.csv", env.BOC, delimiter=", ", fmt='% s')
+        #np.savetxt("curves/Presencia_autos.csv", env.Invalues['present_cars'], delimiter=", ", fmt='% s')
+        np.savetxt("curves/Presencia_autos.csv", ddpg.Presence, delimiter=", ", fmt='% s')
+        #np.savetxt("curves/SOC.csv", env.SOC, delimiter=", ", fmt='% s')
+        np.savetxt("curves/SOC.csv", ddpg.SOC, delimiter=", ", fmt='% s')
 
 
 
