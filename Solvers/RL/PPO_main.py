@@ -31,7 +31,7 @@ def save_models(actor, critic, directory, actor_filename='ppo_actor.pth', critic
     torch.save(critic.state_dict(), critic_path)
 
 
-def load_models(actor, critic, directory, actor_filename='actor.pth', critic_filename='critic.pth'):
+def load_models(actor, critic, directory='model/', actor_filename='ppo_actor.pth', critic_filename='ppo_critic.pth'):
     """
     Carga los modelos del actor y del crítico desde el directorio especificado.
 
@@ -175,15 +175,14 @@ def main(args, number, seed):
     if not os.path.exists(directory_2):
         os.makedirs(directory_2)
     np.savetxt("curves/Rew_PPO.csv", evaluate_rewards, delimiter=", ", fmt='% s')
-    SAVE = True
 
+    SAVE = False
 
     if SAVE:
         # Guardar modelos
         save_models(agent.actor, agent.critic, 'model')
     else:
-        pass
-        # TODO: Armar una clase que cargue los modelos de torch
+        load_models(agent.actor, agent.critic, 'model')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Hyperparameters Setting for ppo-continuous")

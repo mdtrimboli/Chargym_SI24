@@ -19,7 +19,7 @@ from stable_baselines3.common.noise import OrnsteinUhlenbeckActionNoise
 
 def main():
 
-    SAVE = False     # True para Guardar - False para Cargar modelo
+    SAVE = True     # True para Guardar - False para Cargar modelo
 
 
     fecha_actual = datetime.now().date()

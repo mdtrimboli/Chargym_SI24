@@ -24,6 +24,9 @@ class DDPG:
         self.episodic_reward_buffer = []
         self.episodic_length_buffer = []
 
+        self.episodic_c1 = []
+        self.episodic_c3 = []
+
         self._initialize_target_networks()
         self._initialize_optimizers()
 
@@ -158,10 +161,16 @@ class DDPG:
         episode_lengths = []
         episode_actions = []
 
+        eps_c1 = []
+        eps_c3 = []
+
         observation = self._env.reset()
         episode_reward = 0
         episode_length = 0
         episode_action = 0
+
+        episode_c1 = 0
+        episode_c3 = 0
 
         self._eval_mode()
 
@@ -169,7 +178,12 @@ class DDPG:
             action = self._get_action(observation, is_training=False)
             episode_action += np.absolute(action)
             observation, reward, done, info = self._env.step(action)
+            Cost3 = -info['Cost_3']
             episode_reward += reward
+
+            episode_c1 += (reward - Cost3)
+            episode_c3 += Cost3
+
             episode_length += 1
             
             if done or (episode_length == self._config.max_episode_length):
@@ -177,8 +191,14 @@ class DDPG:
                 self.episodic_reward_buffer.append(episode_reward)
                 self.episodic_length_buffer.append(episode_length)
 
+                self.episodic_c1.append(episode_c1)
+                self.episodic_c3.append(episode_c3)
+
                 self.SOC = info['SOC']
                 self.Presence = info['Presence']
+
+                eps_c1.append(episode_c1)
+                eps_c3.append(episode_c3)
 
                 episode_rewards.append(episode_reward)
                 episode_lengths.append(episode_length)
@@ -189,8 +209,14 @@ class DDPG:
                 episode_length = 0
                 episode_action = 0
 
+                episode_c1 = 0
+                episode_c3 = 0
+
         mean_episode_reward = np.mean(episode_rewards)
         mean_episode_length = np.mean(episode_lengths)
+
+        mean_c1 = np.mean(eps_c1)
+        mean_c3 = np.mean(eps_c3)
 
         self._eval_global_step += 1
 
@@ -200,6 +226,8 @@ class DDPG:
               f"Number of episodes: {len(episode_actions)}\n"
               f"Average episode length: {mean_episode_length}\n"
               f"Average reward: {mean_episode_reward}\n"
+              f"Avg demand reward: {mean_c1}\n"
+              f"Avg charging reward: {mean_c3}\n"
               f"Average action magnitude: {np.mean(episode_actions)}")
 
     def train(self):

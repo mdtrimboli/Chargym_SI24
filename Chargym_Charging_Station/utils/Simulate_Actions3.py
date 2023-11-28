@@ -63,7 +63,6 @@ def simulate_clever_control(self, actions):
     Grid_final = max([Total_charging - RES_Gen, 0])
     Cost_1 = Grid_final*self.Energy["Price"][0, hour]       # Lo que cuesta consumir de la red (positivo)
 
-
     # Second Cost index
     # Penalty of wasted RES energy
     # This is not used in this environment version
