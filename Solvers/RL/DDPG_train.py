@@ -23,7 +23,7 @@ def main():
 
 
     fecha_actual = datetime.now().date()
-    fecha_carga = fecha_actual
+    fecha_carga = '2023-11-22'  #Formato: '2023-11-22'
 
     config = Config.get().main.trainer
     models_dir = f"models/DDPG-{int(time.time())}"
@@ -63,8 +63,8 @@ def main():
         torch.save(ddpg._actor.state_dict(), f'model/ddpg_actor_{fecha_actual}.pth')
         torch.save(ddpg._critic.state_dict(), f'model/ddpg_critic_{fecha_actual}.pth')
     else:
-        ddpg._actor.load_state_dict(torch.load(f'model/ddpg_actor.pth'))
-        ddpg._critic.load_state_dict(torch.load(f'model/ddpg_critic.pth'))
+        ddpg._actor.load_state_dict(torch.load(f'model/ddpg_actor_{fecha_carga}.pth'))
+        ddpg._critic.load_state_dict(torch.load(f'model/ddpg_critic_{fecha_carga}.pth'))
         ddpg.evaluate()
 
     if SAVE:
