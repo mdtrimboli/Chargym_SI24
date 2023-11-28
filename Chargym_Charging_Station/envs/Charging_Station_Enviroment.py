@@ -25,6 +25,8 @@ class ChargingEnv(gym.Env):
         self.done = False
         self.Grid_Evol_mem = []
         self.SOC = []
+        self.E_almacenada_total = 0
+        self.Lista_E_Almac_Total = []
 
         # EV_parameters
         EV_capacity = 30
@@ -85,10 +87,17 @@ class ChargingEnv(gym.Env):
         self.Penalty_Evol.append(Cost_EV)
         self.Cost_History.append(reward)
 
+        # ------------------------------------------------------------------------------------------------------
+        # Guarda el Total_Charging en un vector
+        # Si recién comienza el día reiniciar el vector
+        if self.timestep ==0:
+            self.Lista_E_Almac_Total.clear()
+        self.Lista_E_Almac_Total.append(self.E_almacenada_total)
+        # ------------------------------------------------------------------------------------------------------
+
         # Actualizar "t" y obtener observaciones
         self.timestep = self.timestep + 1
         conditions = self.get_obs()
-
         # Si se completa el dia, finalizar y almacenar resultados
         if self.timestep == 24:
             self.done = True
@@ -98,19 +107,21 @@ class ChargingEnv(gym.Env):
                        'Renewable': self.Energy['Renewable'],'Cost_History': self.Cost_History}
             #------------------------------------------------------------------------------------------------------------
 
+
             Generacion_pv = Results['Renewable'][0][:24]
             self.E_almac_pv = Generacion_pv - Results['RES_wasted']
+
             En_almacenada_total = Results['Grid_Final'] + self.E_almac_pv # En_consumida_total = E. Consumida de la red + Energía consumida del panel
-            Porcentaje_Red = np.zeros(len(En_almacenada_total))
-            Porcentaje_PV = np.zeros(len(En_almacenada_total))
+            #Porcentaje_Red = np.zeros(len(En_almacenada_total))
+            #Porcentaje_PV = np.zeros(len(En_almacenada_total))
             Energía_desp_EV = np.zeros(len(En_almacenada_total))
-            for ii in range(len(En_almacenada_total)):
-                if En_almacenada_total[ii] >= 0:
-                    Porcentaje_Red[ii] = Results['Grid_Final'][ii] / En_almacenada_total[ii]
-                    Porcentaje_PV[ii] = Generacion_pv[ii] / En_almacenada_total[ii]
-                else:
-                    Porcentaje_Red[ii] = 0
-                    Porcentaje_PV[ii] = 0
+            #for ii in range(len(En_almacenada_total)):
+            #    if En_almacenada_total[ii] >= 0:
+            #        Porcentaje_Red[ii] = Results['Grid_Final'][ii] / En_almacenada_total[ii]
+            #        Porcentaje_PV[ii] = Generacion_pv[ii] / En_almacenada_total[ii]
+            #    else:
+            #        Porcentaje_Red[ii] = 0
+            #        Porcentaje_PV[ii] = 0
 
             horas = np.linspace(0,23,24)
             #print("Consumo de la Red: ", Results['Grid_Final'])     # Lo que se consume de la red
@@ -122,9 +133,10 @@ class ChargingEnv(gym.Env):
             #print("Generac de energía del PV: ", Generacion_pv)
             #print("Sobrante de Energía de PV: ", Results['RES_wasted'])
 
-            # print("SoC: ", Results['BOC'])      # Estado de carga de los autos las 24 hs
+            #print("SoC: ", Results['BOC'])      # Estado de carga de los autos las 24 hs
             #print("Energía consumida pv: ", self.Consumo_pv)
             #print("Energía generada pv: ", Results['RES_wasted'])
+            #print('Total_charging', self.Lista_E_Almac_Total)
 
             #plt.plot(Generacion_pv, label='Gen PV', color='green')
             #plt.plot(Results['RES_wasted'], label='Wasted', color='orange')
@@ -184,6 +196,8 @@ class ChargingEnv(gym.Env):
                 self.Invalues['DepartureT'].append(self.Invalues['Departure'][ii][0].tolist())
 
         return self.get_obs()       # Devuelve Observación
+
+
 
     def get_obs(self):
         if self.timestep == 0:

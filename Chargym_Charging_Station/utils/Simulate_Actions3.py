@@ -49,7 +49,7 @@ def simulate_clever_control(self, actions):
     #RES_avail = max([0, Renewable[0, hour] - Consumed[0, hour]])      # Energía renovable disponible ---> Siempre usa el día 0!!!
 
     Total_charging = sum(P_charging)      # Potencia demandada y consumida por todos los autos
-
+    self.E_almacenada_total = Total_charging
     # First Cost index
     # ----------------------------------------------------------------------------
     # Grid_final = max([Total_charging - RES_avail, 0])      # Lo que se consume de la red

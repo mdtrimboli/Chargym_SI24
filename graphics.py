@@ -35,12 +35,17 @@ else:
     E_net_curve = loadtxt(open('Solvers/RL/curves/E_almacenada_red.csv', 'rb'), delimiter=",")
     E_PV_curve = loadtxt(open('Solvers/RL/curves/E_almacenada_PV.csv', 'rb'), delimiter=",")
 
+    E_tot_curve = loadtxt(open('Solvers/RL/curves/E_almacenada_total.csv', 'rb'), delimiter=",")
+    E_tot_curve = [0, *E_tot_curve]
+    #np.insert(E_tot_curve, 0, 0, 0)
+
     fig, ax1 = plt.subplots()
 
     ax1.set_xlabel('Time [h]')
     ax1.set_ylabel('Energy [KWh]')
     ax1.plot(E_net_curve[10:], color='tab:blue')
     ax1.plot(E_PV_curve, color='tab:green')
+    ax1.plot(E_tot_curve, color='tab:grey')
     ax1.tick_params(axis='y')
 
     ax2 = ax1.twinx()

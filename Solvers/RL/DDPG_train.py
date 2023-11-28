@@ -23,7 +23,7 @@ def main():
 
 
     fecha_actual = datetime.now().date()
-    fecha_carga = '2023-11-22'  #Formato: '2023-11-22'
+    fecha_carga = '2023-11-17'  #Formato: '2023-11-22'
 
     config = Config.get().main.trainer
     models_dir = f"models/DDPG-{int(time.time())}"
@@ -86,6 +86,7 @@ def main():
         np.savetxt("curves/Presencia_autos.csv", ddpg.Presence, delimiter=", ", fmt='% s')
         #np.savetxt("curves/SOC.csv", env.SOC, delimiter=", ", fmt='% s')
         np.savetxt("curves/SOC.csv", ddpg.SOC, delimiter=", ", fmt='% s')
+        np.savetxt("curves/E_almacenada_total.csv", env.Lista_E_Almac_Total, delimiter=", ", fmt='% s')
 
 
 
