@@ -40,14 +40,15 @@ if Train:
     plt.savefig(f'Solvers/RL/curves/Reward_comp_{actual_date}.png', dpi=600)
     plt.show()
 else:
+    algoritmo = 'ppo'
 
     ### GRAFICA DE GENERACION
 
     price_curve = loadtxt(open('Solvers/RL/curves/Precio.csv', 'rb'), delimiter=",")
-    E_net_curve = loadtxt(open('Solvers/RL/curves/E_almacenada_red.csv', 'rb'), delimiter=",")
-    E_PV_curve = loadtxt(open('Solvers/RL/curves/E_almacenada_PV.csv', 'rb'), delimiter=",")
+    E_net_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
+    E_PV_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
 
-    E_tot_curve = loadtxt(open('Solvers/RL/curves/E_almacenada_total.csv', 'rb'), delimiter=",")
+    E_tot_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
     E_tot_curve = [0, *E_tot_curve]
     #np.insert(E_tot_curve, 0, 0, 0)
 
@@ -55,6 +56,7 @@ else:
 
     ax1.set_xlabel('Time [h]')
     ax1.set_ylabel('Energy [KWh]')
+    print(len(E_net_curve))
     ax1.plot(E_net_curve[10:], color='tab:blue')
     ax1.plot(E_PV_curve, color='tab:green')
     ax1.plot(E_tot_curve, color='tab:grey')
@@ -72,8 +74,8 @@ else:
 
     # GRAFICA DE CARGA
 
-    departure_curve = loadtxt(open('Solvers/RL/curves/Presencia_autos.csv', 'rb'), delimiter=",")
-    soc_curve = loadtxt(open('Solvers/RL/curves/SOC.csv', 'rb'), delimiter=",")
+    departure_curve = loadtxt(open(f'Solvers/RL/curves/Presencia_autos_{algoritmo}.csv', 'rb'), delimiter=",")
+    soc_curve = loadtxt(open(f'Solvers/RL/curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")
 
     departure_curve = np.hstack((departure_curve[:, -1].reshape(-1, 1), departure_curve[:, :-1]))
 
