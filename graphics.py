@@ -11,18 +11,6 @@ actual_date = datetime.now().date()
 
 Train = False
 
-def convert_zero(A, B):
-    # Verificar que ambos arrays tengan la misma longitud
-    if len(A) != len(B):
-        print("Los arrays no tienen la misma longitud")
-        return
-
-    # Iterar a través de los elementos de A y B
-    for i in range(len(A)):
-        if A[i] == 0:
-            # Si A es cero, convertir el elemento correspondiente de B a cero
-            B[i] = 0
-
 if Train:
     ### COMPARACION DE REWARD
 
@@ -78,23 +66,20 @@ else:
     soc_curve = loadtxt(open(f'Solvers/RL/curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")
 
     departure_curve = np.hstack((departure_curve[:, -1].reshape(-1, 1), departure_curve[:, :-1]))
+    print("SOC1 : ", soc_curve[0, :])
 
     # Crear el subplot de 2 filas y 5 columnas
     fig, axs = plt.subplots(2, 5, figsize=(12, 6))
     k = 0
-
     # Rellenar cada subgráfico con los datos
     for i in range(2):
         for j in range(5):
             k += 1
-
-            convert_zero(departure_curve[k - 1, :], soc_curve[k-1, :])
             axs[i, j].fill_between(range(24), price_curve, step="pre", alpha=0.4)
             #axs[i, j].plot(departure_curve[k-1, :], label='departure', color='red')
             axs[i, j].plot(price_curve, color='tab:red')
             axs[i, j].step(range(25), departure_curve[k - 1, :], label='departure', color='green')
             axs[i, j].plot(soc_curve[k-1, :], label='soc', color='blue')
-            #axs[i, j].step(timestep, soc_adjusted, label='soc', color='blue')
             axs[i, j].set_title(f'Vehiculo {k}')
 
     # Ajustar el diseño para evitar superposiciones
@@ -103,5 +88,4 @@ else:
     # Mostrar el gráfico
     plt.savefig(f'Solvers/RL/curves/Charging_{actual_date}.png', dpi=600)
     plt.show()
-
 

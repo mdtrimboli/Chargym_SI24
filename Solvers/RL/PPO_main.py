@@ -3,17 +3,14 @@ import gym
 import argparse
 import os
 import torch
-from datetime import datetime
-
 from Solvers import check_main
 from stable_baselines3.common.env_checker import check_env
 from Solvers.RL.ppo.normalization import Normalization, RewardScaling
 from Solvers.RL.ppo.replay_buffer import ReplayBuffer
 from Solvers.RL.ppo.ppo_continuous import PPO_continuous
-from Solvers.RL.ppo.ppo import PPO
 
 
-def save_models(actor, critic, directory):
+def save_models(actor, critic, directory, actor_filename='ppo_actor.pth', critic_filename='ppo_critic.pth'):
     """
     Guarda los modelos del actor y del crítico en el directorio especificado.
 
@@ -24,10 +21,6 @@ def save_models(actor, critic, directory):
     - actor_filename: Nombre del archivo para el modelo del actor.
     - critic_filename: Nombre del archivo para el modelo del crítico.
     """
-    fecha_actual = datetime.now().date()
-    actor_filename = f'ppo_actor_{fecha_actual}.pth'
-    critic_filename = f'ppo_critic_{fecha_actual}.pth'
-
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -38,7 +31,7 @@ def save_models(actor, critic, directory):
     torch.save(critic.state_dict(), critic_path)
 
 
-def load_models(actor, critic, fecha_carga, directory='model/'):
+def load_models(actor, critic, directory, actor_filename='actor.pth', critic_filename='critic.pth'):
     """
     Carga los modelos del actor y del crítico desde el directorio especificado.
 
@@ -49,11 +42,6 @@ def load_models(actor, critic, fecha_carga, directory='model/'):
     - actor_filename: Nombre del archivo para el modelo del actor.
     - critic_filename: Nombre del archivo para el modelo del crítico.
     """
-
-    fecha_carga = fecha_carga
-    actor_filename = f'ppo_actor_{fecha_carga}.pth'
-    critic_filename = f'ppo_critic_{fecha_carga}.pth'
-
     actor_path = os.path.join(directory, actor_filename)
     critic_path = os.path.join(directory, critic_filename)
 
@@ -87,9 +75,7 @@ def evaluate_policy(args, env, agent, state_norm):
 
 
 def main(args, number, seed):
-
-    SAVE = False
-    fecha_carga = '2023-11-29'
+    env_name = 'ChargingEnv-v0'
     env = gym.make('ChargingEnv-v0')
     env_evaluate = gym.make('ChargingEnv-v0')  # When evaluating the policy, we need to rebuild an environment
 
@@ -114,41 +100,94 @@ def main(args, number, seed):
     print("max_action={}".format(args.max_action))
     print("max_episode_steps={}".format(args.max_episode_steps))
 
-    agent = PPO_continuous(args)
-    agent_ppo = PPO(env, agent, args)
+    evaluate_num = 0  # Record the number of evaluations
+    evaluate_rewards = []  # Record the rewards during the evaluating
+    total_steps = 0  # Record the total steps during the training
 
+    replay_buffer = ReplayBuffer(args)
+    agent = PPO_continuous(args)
+
+    # Build a tensorboard
+    # writer = SummaryWriter(log_dir='runs/PPO_continuous/env_{}_{}_number_{}_seed_{}'.format(env_name, args.policy_dist, number, seed))
+
+    state_norm = Normalization(shape=args.state_dim)  # Trick 2:state normalization
+    if args.use_reward_norm:  # Trick 3:reward normalization
+        reward_norm = Normalization(shape=1)
+    elif args.use_reward_scaling:  # Trick 4:reward scaling
+        reward_scaling = RewardScaling(shape=1, gamma=args.gamma)
+
+    while total_steps < args.max_train_steps:
+        s = env.reset()
+        if args.use_state_norm:
+            s = state_norm(s)
+        if args.use_reward_scaling:
+            reward_scaling.reset()
+        episode_steps = 0
+        done = False
+        while not done:
+            episode_steps += 1
+            a, a_logprob = agent.choose_action(s)  # Action and the corresponding log probability
+            if args.policy_dist == "Beta":
+                action = 2 * (a - 0.5) * args.max_action  # [0,1]->[-max,max]
+            else:
+                action = a
+            s_, r, done, _ = env.step(action)
+
+            if args.use_state_norm:
+                s_ = state_norm(s_)
+            if args.use_reward_norm:
+                r = reward_norm(r)
+            elif args.use_reward_scaling:
+                r = reward_scaling(r)
+
+            # When dead or win or reaching the max_episode_steps, done will be Ture, we need to distinguish them;
+            # dw means dead or win,there is no next state s';
+            # but when reaching the max_episode_steps,there is a next state s' actually.
+            if done and episode_steps != args.max_episode_steps:
+                dw = True
+            else:
+                dw = False
+
+            # Take the 'action'，but store the original 'a'（especially for Beta）
+            replay_buffer.store(s, a, a_logprob, r, s_, dw, done)
+            s = s_
+            total_steps += 1
+
+            # When the number of transitions in buffer reaches batch_size,then update
+            if replay_buffer.count == args.batch_size:
+                agent.update(replay_buffer, total_steps)
+                replay_buffer.count = 0
+
+            # Evaluate the policy every 'evaluate_freq' steps
+            if total_steps % args.evaluate_freq == 0:
+                evaluate_num += 1
+                evaluate_reward = evaluate_policy(args, env_evaluate, agent, state_norm)
+                evaluate_rewards.append(evaluate_reward)
+                print("evaluate_num:{} \t evaluate_reward:{} \t".format(evaluate_num, evaluate_reward))
+                #writer.add_scalar('step_rewards_{}'.format(env_name), evaluate_rewards[-1], global_step=total_steps)
+                # Save the rewards
+                directory = 'data'
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                if evaluate_num % args.save_freq == 0:
+                    np.save('data/PPO_continuous_{}_env_{}_number_{}_seed_{}.npy'.format(args.policy_dist, env_name, number, seed), np.array(evaluate_rewards))
     directory_2 = 'curves'
+    if not os.path.exists(directory_2):
+        os.makedirs(directory_2)
+    np.savetxt("curves/Rew_PPO.csv", evaluate_rewards, delimiter=", ", fmt='% s')
+    SAVE = True
+
 
     if SAVE:
-        agent_ppo.train()
-        save_models(agent.actor, agent.critic, 'model')     # Guardar modelos
-        if not os.path.exists(directory_2):
-            os.makedirs(directory_2)
-        np.savetxt("curves/Rew_PPO.csv", agent_ppo._evaluate_rewards, delimiter=", ", fmt='% s')
-
+        # Guardar modelos
+        save_models(agent.actor, agent.critic, 'model')
     else:
-        cwb_actor = agent.actor.state_dict()
-        cwb_critic = agent.critic.state_dict()
-        load_models(agent.actor, agent.critic, fecha_carga, 'model')
-        agent_ppo.evaluate(agent)
-
-    if not SAVE:
-        np.savetxt("curves/Precio.csv", np.array([0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.1, 0.1,
-                                                  0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.06, 0.06, 0.06, 0.1, 0.1, 0.1, 0.1]),
-                   delimiter=", ", fmt='% s')
-        np.savetxt("curves/E_almacenada_red_ppo.csv", env.Grid_Evol_mem, delimiter=", ", fmt='% s')
-        np.savetxt("curves/E_almacenada_PV_ppo.csv", env.E_almac_pv, delimiter=", ", fmt='% s')
-        # gráfico c) Perfil de carga
-        # np.savetxt("curves/Presencia_autos.csv", env.Invalues['present_cars'], delimiter=", ", fmt='% s')
-        np.savetxt("curves/Presencia_autos_ppo.csv", agent_ppo.presence, delimiter=", ", fmt='% s')
-        # np.savetxt("curves/SOC.csv", env.SOC, delimiter=", ", fmt='% s')
-        np.savetxt("curves/SOC_ppo.csv", agent_ppo.soc, delimiter=", ", fmt='% s')
-        np.savetxt("curves/E_almacenada_total_ppo.csv", env.Lista_E_Almac_Total, delimiter=", ", fmt='% s')
-
+        pass
+        # TODO: Armar una clase que cargue los modelos de torch
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Hyperparameters Setting for ppo-continuous")
-    parser.add_argument("--max_train_steps", type=int, default=int(480000), help=" Maximum number of training steps")   #48k para entrenar
+    parser.add_argument("--max_train_steps", type=int, default=int(480000), help=" Maximum number of training steps")
     parser.add_argument("--evaluate_freq", type=float, default=24, help="Evaluate the policy every 'evaluate_freq' steps")
     parser.add_argument("--save_freq", type=int, default=1200, help="Save frequency")
     parser.add_argument("--policy_dist", type=str, default="Gaussian", help="Beta or Gaussian")

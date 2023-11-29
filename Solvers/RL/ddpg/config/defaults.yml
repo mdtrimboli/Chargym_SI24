@@ -75,7 +75,7 @@ arguments:
         - name: "steps_per_epoch"
           default: 1200
         - name: "evaluation_steps"
-          default: 1200   # 24 para evaluar, 1200 para validar
+          default: 24
         - name: "batch_size"
           default: 512
         - name: "max_episode_length"
@@ -95,7 +95,7 @@ arguments:
         - name: "action_noise_range"
           default: 0.1   #0.01
         - name: "use_gpu"
-          default: true
+          default: false
         - name: "reward_scale"
           default: 1
         - name: "max_updates_per_episode"

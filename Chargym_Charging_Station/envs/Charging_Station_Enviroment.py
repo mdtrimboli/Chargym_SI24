@@ -158,7 +158,7 @@ class ChargingEnv(gym.Env):
             # ------------------------------------------------------------------------------------------------------------
             savemat(self.current_folder + '\Results.mat', {'Results': Results})
 
-        self.info = {'SOC':self.SOC, 'Presence': self.Invalues['present_cars'], 'Cost_3': Cost_EV}
+        self.info = {'SOC':self.SOC, 'Presence': self.Invalues['present_cars']}
         return conditions, -reward, self.done, self.info        # Devuelve la observación, - (el costo), y si terminó los 24 steps
 
     def reset(self, reset_flag=0):
