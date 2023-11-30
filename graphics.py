@@ -37,15 +37,14 @@ else:
     E_PV_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
 
     E_tot_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
-    E_tot_curve = [0, *E_tot_curve]
+    #E_tot_curve = [0, *E_tot_curve]    #Descomentar para DDPG
     #np.insert(E_tot_curve, 0, 0, 0)
 
     fig, ax1 = plt.subplots()
 
     ax1.set_xlabel('Time [h]')
     ax1.set_ylabel('Energy [KWh]')
-    print(len(E_net_curve))
-    ax1.plot(E_net_curve[10:], color='tab:blue')
+    ax1.plot(E_net_curve, color='tab:blue')
     ax1.plot(E_PV_curve, color='tab:green')
     ax1.plot(E_tot_curve, color='tab:grey')
     ax1.tick_params(axis='y')
@@ -66,7 +65,6 @@ else:
     soc_curve = loadtxt(open(f'Solvers/RL/curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")
 
     departure_curve = np.hstack((departure_curve[:, -1].reshape(-1, 1), departure_curve[:, :-1]))
-    print("SOC1 : ", soc_curve[0, :])
 
     # Crear el subplot de 2 filas y 5 columnas
     fig, axs = plt.subplots(2, 5, figsize=(12, 6))

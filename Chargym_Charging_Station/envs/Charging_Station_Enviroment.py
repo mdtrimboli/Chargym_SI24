@@ -75,7 +75,7 @@ class ChargingEnv(gym.Env):
         # Cost_EV: Costo por no cargar 100% un auto,
         # BOC: SOC
 
-        [reward, Grid, Res_wasted, Cost_EV, self.BOC] = Simulate_Actions3.simulate_clever_control(self, actions)
+        [reward, Grid, Res_wasted, self.Cost_EV, self.BOC] = Simulate_Actions3.simulate_clever_control(self, actions)
 
         self.SOC = self.BOC
 
@@ -84,7 +84,7 @@ class ChargingEnv(gym.Env):
         self.Grid_Evol_mem.append(Grid)
         self.Grid_Evol.append(Grid)
         self.Res_wasted_evol.append(Res_wasted)
-        self.Penalty_Evol.append(Cost_EV)
+        self.Penalty_Evol.append(self.Cost_EV)
         self.Cost_History.append(reward)
 
         # ------------------------------------------------------------------------------------------------------
@@ -158,7 +158,8 @@ class ChargingEnv(gym.Env):
             # ------------------------------------------------------------------------------------------------------------
             savemat(self.current_folder + '\Results.mat', {'Results': Results})
 
-        self.info = {'SOC':self.SOC, 'Presence': self.Invalues['present_cars']}
+        Cost1 = reward - self.Cost_EV
+        self.info = {'SOC':self.SOC, 'Presence': self.Invalues['present_cars'], 'Cost1': Cost1}
         return conditions, -reward, self.done, self.info        # Devuelve la observación, - (el costo), y si terminó los 24 steps
 
     def reset(self, reset_flag=0):
