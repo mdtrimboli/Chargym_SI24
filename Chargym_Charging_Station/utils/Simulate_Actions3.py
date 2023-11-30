@@ -63,6 +63,11 @@ def simulate_clever_control(self, actions):
     Grid_final = max([Total_charging - RES_Gen, 0])
     Cost_1 = Grid_final*self.Energy["Price"][0, hour]       # Lo que cuesta consumir de la red (positivo)
 
+    # -----------------------------------------------------------------------------------------
+    # Quito costo 1 para ver si llega a cargar todos los autos.
+    # Cost_1 = 0
+    # -----------------------------------------------------------------------------------------
+
 
     # Second Cost index
     # Penalty of wasted RES energy
@@ -80,7 +85,8 @@ def simulate_clever_control(self, actions):
         # BOC[leave[ii], hour+1] solo tiene en cuenta el SoC de los autos que se van a ir en la próxima hora
     Cost_3 = sum(Cost_EV)
     # TODO: Existe un costo 4 que es la energía que sobra de los EV (Total_charging < 0)
-    Cost = Cost_1 + Cost_3
+    Cost_3 = Cost_3
+    Cost = (Cost_1 / 6) + Cost_3
 
     return Cost, Grid_final, RES_avail, Cost_3, BOC
     # Cost: Costo total

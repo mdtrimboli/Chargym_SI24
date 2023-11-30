@@ -34,10 +34,12 @@ else:
     price_curve = loadtxt(open('Solvers/RL/curves/Precio.csv', 'rb'), delimiter=",")
     E_net_curve = loadtxt(open('Solvers/RL/curves/E_almacenada_red.csv', 'rb'), delimiter=",")
     E_PV_curve = loadtxt(open('Solvers/RL/curves/E_almacenada_PV.csv', 'rb'), delimiter=",")
+    # Agregar 0 al inicio para equiparar con el resto
+    E_PV_curve = [0, *E_PV_curve]
 
     E_tot_curve = loadtxt(open('Solvers/RL/curves/E_almacenada_total.csv', 'rb'), delimiter=",")
+    # Agregar 0 al inicio para equiparar con el resto
     E_tot_curve = [0, *E_tot_curve]
-    #np.insert(E_tot_curve, 0, 0, 0)
 
     fig, ax1 = plt.subplots()
 

@@ -23,7 +23,7 @@ def main():
 
 
     fecha_actual = datetime.now().date()
-    fecha_carga = '2023-11-17'  #Formato: '2023-11-22'
+    fecha_carga = '2023-11-30'  #Formato: '2023-11-22'
 
     config = Config.get().main.trainer
     models_dir = f"models/DDPG-{int(time.time())}"

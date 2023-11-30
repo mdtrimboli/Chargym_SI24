@@ -28,6 +28,9 @@ class ChargingEnv(gym.Env):
         self.E_almacenada_total = 0
         self.Lista_E_Almac_Total = []
 
+        self.costo3 = []
+        self.costototal = []
+
         # EV_parameters
         EV_capacity = 30
         charging_effic = 0.91
@@ -137,6 +140,9 @@ class ChargingEnv(gym.Env):
             #print("Energía consumida pv: ", self.Consumo_pv)
             #print("Energía generada pv: ", Results['RES_wasted'])
             #print('Total_charging', self.Lista_E_Almac_Total)
+            self.costo3.append(np.mean(self.Penalty_Evol))
+            self.costototal.append(np.mean(self.Cost_History))
+            #print(costo3/costototal)
 
             #plt.plot(Generacion_pv, label='Gen PV', color='green')
             #plt.plot(Results['RES_wasted'], label='Wasted', color='orange')
