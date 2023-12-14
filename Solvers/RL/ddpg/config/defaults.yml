@@ -71,13 +71,13 @@ arguments:
       help: "Training parameters."
       properties:
         - name: "epochs"
-          default: 400
+          default: 800
         - name: "steps_per_epoch"
           default: 1200
         - name: "evaluation_steps"
           default: 24
         - name: "batch_size"
-          default: 512
+          default: 2048   #512
         - name: "max_episode_length"
           default: 300
         - name: "replay_buffer_size"
@@ -87,9 +87,9 @@ arguments:
         - name: "polyak"
           default: 0.995
         - name: "actor_lr"
-          default: 0.0001    #0.0001
+          default: 0.0003    #0.0001
         - name: "critic_lr"
-          default: 0.0001    #0.0001
+          default: 0.0003    #0.0001
         - name: "start_steps"
           default: 500  #500
         - name: "action_noise_range"

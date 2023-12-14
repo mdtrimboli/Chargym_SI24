@@ -23,7 +23,7 @@ def main():
 
 
     fecha_actual = datetime.now().date()
-    fecha_carga = '2023-11-30'  #Formato: '2023-11-22'
+    fecha_carga = '2023-11-22'  #Formato: '2023-11-22'
 
     config = Config.get().main.trainer
     models_dir = f"models/DDPG-{int(time.time())}"
@@ -79,14 +79,14 @@ def main():
         np.savetxt("curves/Precio.csv", np.array([0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.1, 0.1,
                                                   0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.06, 0.06, 0.06, 0.1, 0.1, 0.1, 0.1]),
                    delimiter=", ", fmt='% s')
-        np.savetxt("curves/E_almacenada_red.csv", env.Grid_Evol_mem, delimiter=", ", fmt='% s')
-        np.savetxt("curves/E_almacenada_PV.csv", env.E_almac_pv, delimiter=", ", fmt='% s')
+        np.savetxt("curves/E_almacenada_red_ddpg.csv", env.Grid_Evol_mem, delimiter=", ", fmt='% s')
+        np.savetxt("curves/E_almacenada_PV_ddpg.csv", env.E_almac_pv, delimiter=", ", fmt='% s')
         #gráfico c) Perfil de carga
         #np.savetxt("curves/Presencia_autos.csv", env.Invalues['present_cars'], delimiter=", ", fmt='% s')
-        np.savetxt("curves/Presencia_autos.csv", ddpg.Presence, delimiter=", ", fmt='% s')
+        np.savetxt("curves/Presencia_autos_ddpg.csv", ddpg.Presence, delimiter=", ", fmt='% s')
         #np.savetxt("curves/SOC.csv", env.SOC, delimiter=", ", fmt='% s')
-        np.savetxt("curves/SOC.csv", ddpg.SOC, delimiter=", ", fmt='% s')
-        np.savetxt("curves/E_almacenada_total.csv", env.Lista_E_Almac_Total, delimiter=", ", fmt='% s')
+        np.savetxt("curves/SOC_ddpg.csv", ddpg.SOC, delimiter=", ", fmt='% s')
+        np.savetxt("curves/E_almacenada_total_ddpg.csv", env.Lista_E_Almac_Total, delimiter=", ", fmt='% s')
 
 
 

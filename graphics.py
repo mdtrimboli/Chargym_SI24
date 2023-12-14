@@ -51,15 +51,18 @@ else:
         E_tot_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
         # (Para DDPG) Agregar 0 al inicio para equiparar con el resto
         E_tot_curve = [0, *E_tot_curve]
+        E_PV_curve = [0, *E_PV_curve]
+        if algoritmo == 'ddpg':
+            E_net_curve = E_net_curve[10: ]
 
 
     fig, ax1 = plt.subplots()
 
     ax1.set_xlabel('Time [h]')
     ax1.set_ylabel('Energy [KWh]')
-    ax1.plot(E_net_curve[10:], color='tab:blue', label='Power grid energy')
+    ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
     ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
-    ax1.plot(E_tot_curve, color='tab:grey', label='Total energy')
+    ax1.plot(E_tot_curve, color='tab:grey', label='Demand energy')
     ax1.tick_params(axis='y')
     ax1.legend(loc="upper left", framealpha=0.7, facecolor='white')
     ax1.set_ylim(top=80)
@@ -73,17 +76,16 @@ else:
 
 
 
-    plt.savefig(f'Solvers/RL/curves/Energy_comp_{actual_date}.png', dpi=600)
+    plt.savefig(f'Solvers/RL/curves/Energy_comp_{actual_date}_{algoritmo}.png', dpi=600)
     plt.show()
 
 
     # GRAFICA DE CARGA
 
-    departure_curve = loadtxt(open('Solvers/RL/curves/Presencia_autos.csv', 'rb'), delimiter=",")
-    soc_curve = loadtxt(open('Solvers/RL/curves/SOC.csv', 'rb'), delimiter=",")
+    departure_curve = loadtxt(open(f'Solvers/RL/curves/Presencia_autos_{algoritmo}.csv', 'rb'), delimiter=",")
+    soc_curve = loadtxt(open(f'Solvers/RL/curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")
 
     departure_curve = np.hstack((departure_curve[:, -1].reshape(-1, 1), departure_curve[:, :-1]))
-    print("SOC1 : ", soc_curve[0, :])
 
     # Crear el subplot de 2 filas y 5 columnas
     fig, axs = plt.subplots(2, 5, figsize=(12, 6))
@@ -92,18 +94,30 @@ else:
     for i in range(2):
         for j in range(5):
             k += 1
-            axs[i, j].fill_between(range(24), price_curve, step="pre", alpha=0.4)
             #axs[i, j].plot(departure_curve[k-1, :], label='departure', color='red')
-            axs[i, j].plot(price_curve, color='tab:red', label='price')
-            axs[i, j].step(range(25), departure_curve[k - 1, :], label='departure', color='green')
-            axs[i, j].plot(soc_curve[k-1, :], label='soc', color='blue')
-            axs[i, j].set_title(f'Vehiculo {k}')
+            axs[i, j].step(range(25), departure_curve[k - 1, :], label='Presence', color='green')
+            axs[i, j].plot(soc_curve[k-1, :], label='SoC', color='blue')
+            axs[i, j].set_title(f'EV Spot {k}')
+
+    #lines_labels = [ax.get_legend_handles_labels() for ax in fig.axes]
+    #lines, labels = [sum(lol, []) for lol in zip(*lines_labels)]
+
+    axs[0, 0].set_ylabel('SOC')
+    axs[1, 0].set_ylabel('SOC')
+    axs[1, 0].set_xlabel('Time [hour]')
+    axs[1, 1].set_xlabel('Time [hour]')
+    axs[1, 2].set_xlabel('Time [hour]')
+    axs[1, 3].set_xlabel('Time [hour]')
+    axs[1, 4].set_xlabel('Time [hour]')
 
     # Ajustar el diseño para evitar superposiciones
 
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.15, hspace=0.3)
+    lines, labels = axs[0, 0].get_legend_handles_labels()
+    fig.legend(lines, labels, loc='lower center', ncol=2)
 
     # Mostrar el gráfico
-    plt.savefig(f'Solvers/RL/curves/Charging_{actual_date}.png', dpi=600)
+    plt.savefig(f'Solvers/RL/curves/Charging_{actual_date}_{algoritmo}.png', dpi=600)
     plt.show()
 

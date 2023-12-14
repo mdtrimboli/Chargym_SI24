@@ -150,12 +150,15 @@ def main(args, number, seed):
     #check_main(env)
 
     # Set random seed
+    # Desactivar para aleatoriedad
+    """
     env.seed(seed)
     env.action_space.seed(seed)
     env_evaluate.seed(seed)
     env_evaluate.action_space.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
+    """
 
     args.state_dim = env.observation_space.shape[0]
     args.action_dim = env.action_space.shape[0]
@@ -256,10 +259,9 @@ def main(args, number, seed):
         # Guardar modelos
         save_models(agent.actor, agent.critic, 'model',
                     f'ppo_actor_{fecha_actual}.pth', f'ppo_critic_{fecha_actual}.pth')
-        evaluate(env, agent, args, state_norm)
     else:
         load_models(agent.actor, agent.critic, 'model',
-                    f'actor_{fecha_carga}.pth', f'critic_{fecha_carga}.pth')
+                    f'ppo_actor_{fecha_carga}.pth', f'ppo_critic_{fecha_carga}.pth')
         evaluate(env, agent, args, state_norm)
 
 if __name__ == '__main__':
