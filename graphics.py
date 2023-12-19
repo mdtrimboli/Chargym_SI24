@@ -59,7 +59,7 @@ else:
     En_total = np.sum(E_net_curve)
     print(f"Energía total de {algoritmo}: {En_total}")
     Costo_total = np.sum(price_curve*E_net_curve)
-    print(f"Energía total de {algoritmo}: {Costo_total}")
+    print(f"Costo total de {algoritmo}: {Costo_total}")
 
     fig, ax1 = plt.subplots()
 
