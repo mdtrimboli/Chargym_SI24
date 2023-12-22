@@ -23,7 +23,7 @@ def main():
 
 
     fecha_actual = datetime.now().date()
-    fecha_carga = '2023-11-22'  #Formato: '2023-11-22'
+    fecha_carga = '2023-12-15'  #Formato: '2023-11-22'
 
     config = Config.get().main.trainer
     models_dir = f"models/DDPG-{int(time.time())}"
@@ -76,8 +76,8 @@ def main():
     else:
         #np.savetxt("curves/Price.csv", ddpg.temp, delimiter=", ", fmt='% s')
         #Gráfico b) Evolución Almacenamiento Energía
-        np.savetxt("curves/Precio.csv", np.array([0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.1, 0.1,
-                                                  0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.06, 0.06, 0.06, 0.1, 0.1, 0.1, 0.1]),
+        np.savetxt("curves/Precio.csv", np.array([0.06, 0.06, 0.06, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.06, 0.06, 0.06,
+                                                  0.06, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.07, 0.07, 0.07, 0.06, 0.06]),
                    delimiter=", ", fmt='% s')
         np.savetxt("curves/E_almacenada_red_ddpg.csv", env.Grid_Evol_mem, delimiter=", ", fmt='% s')
         np.savetxt("curves/E_almacenada_PV_ddpg.csv", env.E_almac_pv, delimiter=", ", fmt='% s')

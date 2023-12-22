@@ -61,6 +61,10 @@ def Energy_Calculation(self):
                            0.1, 0.1, 0.076, 0.076, 0.1, 0.082, 0.080, 0.085, 0.079, 0.086, 0.070]
         Price_day[4, :] = [0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
                            0.06, 0.06, 0.06, 0.1, 0.1, 0.1, 0.1]
+    elif price_flag == 6:
+        Price_day = np.array(
+            [0.06, 0.06, 0.06, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.06, 0.06, 0.06, 0.06, 0.1, 0.1, 0.1,
+             0.1, 0.1, 0.1, 0.07, 0.07, 0.07, 0.06, 0.06])
 
     Price_day = np.concatenate([Price_day,Price_day], axis=0)       # Concatena para obtener 48 valores (cada media hora)
     Price = np.zeros((days_of_experiment, 48))
