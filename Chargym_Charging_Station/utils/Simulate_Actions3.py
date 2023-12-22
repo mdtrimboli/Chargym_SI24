@@ -43,7 +43,7 @@ def simulate_clever_control(self, actions):
             BOC[car, hour+1] = BOC[car, hour] + P_charging[car]/self.EV_Param['EV_capacity']
             # Pdem/capacidad es lo que se va a cargar la batería en la próxima hora
 
-    # Calculation of electricity consumption of load
+    # Calculation of load electricity consumption
     # ----------------------------------------------------------------------------
     Perfil_en_cons = np.array([0.77, 0.63, 0.52, 0.46, 0.43, 0.44, 0.45, 0.52, 0.58, 0.63, 0.67, 0.71, 0.75, 0.76, 0.75, 0.73, 0.74, 0.76, 0.85, 0.94, 1.00, 0.99, 0.91, 0.81])
     Max_building_cons = 21.5 * 20 #máximo consumo diario * cantidad de hogares
