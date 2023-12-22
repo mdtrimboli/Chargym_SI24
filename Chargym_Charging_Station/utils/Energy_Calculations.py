@@ -31,7 +31,7 @@ def Energy_Calculation(self):
     for ii in range(0, int(days_of_experiment)):
         for jj in range(0, int((60/minutes_of_timestep)*48)):
             scaling_PV = self.PV_Param['PV_Surface']*self.PV_Param['PV_effic']/1000
-            scaling_sol = 1.5                                                       # TODO: encontrar sentido a este factor
+            scaling_sol = 1.5 * 2  #el 2 es para utilizar el doble de paneles
             xx = solar_radiation[count,0] * scaling_sol * scaling_PV * solar_flag
             # Energía PV = (radiación * factor solar * superficie * efic. PV) / 1000 [w]
             Radiation[ii, jj] = solar_radiation[count,0]        # Radiation = Array de [dias, horas]

@@ -31,25 +31,17 @@ else:
 
     ### GRAFICA DE GENERACION RBC
     if algoritmo == 'rbc':
-
         #TODO: Igualar la semilla a los 3 algoritmos
         price_curve = loadtxt(open('Solvers/RL/curves/Precio.csv', 'rb'), delimiter=",")
         E_net_curve = loadtxt(open(f'Solvers/RBC/curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
-        #E_net_curve = E_net_curve[13: 48]
         E_PV_curve = loadtxt(open(f'Solvers/RBC/curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
-
         E_tot_curve = loadtxt(open(f'Solvers/RBC/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
 
-        # Agregar 0 al inicio para equiparar con el resto
-        #E_PV_curve = [0, *E_PV_curve]
-        # Agregar 0 al inicio para equiparar con el resto
-        #E_tot_curve = [0, *E_tot_curve]
     else:
         ### GRAFICA DE GENERACION DDPG Y PPO
         price_curve = loadtxt(open('Solvers/RL/curves/Precio.csv', 'rb'), delimiter=",")
         E_net_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
         E_PV_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
-
         E_tot_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
 
         if algoritmo == 'ddpg':
@@ -69,12 +61,6 @@ else:
         print(f"Energía total de {algoritmo}: {En_total}")
         Costo_total = np.sum(price_curve * E_net_curve)
         print(f"Costo total de {algoritmo}: {Costo_total}")
-
-    # Quita de último valor a vectores
-    #E_tot_curve = E_tot_curve[:-1]
-    #E_PV_curve = E_PV_curve[:-1]
-    #E_net_curve = E_net_curve[:-1]
-    #price_curve = price_curve[:-1]
 
     fig, ax1 = plt.subplots()
 
