@@ -10,7 +10,7 @@ sns.set_theme()
 actual_date = datetime.now().date()
 
 Train = False
-algoritmo = 'rbc'
+algoritmo = 'ddpg'
 if Train:
     ### COMPARACION DE REWARD
 
@@ -31,6 +31,8 @@ else:
 
     ### GRAFICA DE GENERACION RBC
     if algoritmo == 'rbc':
+
+        #TODO: Igualar la semilla a los 3 algoritmos
         price_curve = loadtxt(open('Solvers/RL/curves/Precio.csv', 'rb'), delimiter=",")
         E_net_curve = loadtxt(open(f'Solvers/RBC/curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
         #E_net_curve = E_net_curve[13: 48]
@@ -50,15 +52,18 @@ else:
 
         E_tot_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
         # (Para DDPG) Agregar 0 al inicio para equiparar con el resto
-        E_tot_curve = [0, *E_tot_curve]
-        E_PV_curve = [0, *E_PV_curve]
+        #E_tot_curve = [0, *E_tot_curve]
+
         if algoritmo == 'ddpg':
-            E_net_curve = E_net_curve[10: ]
+            E_tot_curve = [0, *E_tot_curve]
+            E_PV_curve = [0, *E_PV_curve]
+            E_net_curve = E_net_curve[10:]
+
 
     # CÁLCULO DE ENERGÍA COMPRADA Y SU COSTO
-    En_total = np.sum(E_net_curve)
+    En_total = np.sum(E_net_curve[:-1])
     print(f"Energía total de {algoritmo}: {En_total}")
-    Costo_total = np.sum(price_curve*E_net_curve)
+    Costo_total = np.sum(price_curve*E_net_curve[:-1])
     print(f"Costo total de {algoritmo}: {Costo_total}")
 
     fig, ax1 = plt.subplots()
