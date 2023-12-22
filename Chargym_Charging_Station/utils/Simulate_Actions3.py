@@ -43,6 +43,13 @@ def simulate_clever_control(self, actions):
             BOC[car, hour+1] = BOC[car, hour] + P_charging[car]/self.EV_Param['EV_capacity']
             # Pdem/capacidad es lo que se va a cargar la batería en la próxima hora
 
+    # Calculation of electricity consumption of load
+    # ----------------------------------------------------------------------------
+    Perfil_en_cons = np.array([0.77, 0.63, 0.52, 0.46, 0.43, 0.44, 0.45, 0.52, 0.58, 0.63, 0.67, 0.71, 0.75, 0.76, 0.75, 0.73, 0.74, 0.76, 0.85, 0.94, 1.00, 0.99, 0.91, 0.81])
+    Max_building_cons = 21.5 * 20 #máximo consumo diario * cantidad de hogares
+    Building_cons = Perfil_en_cons * Max_building_cons
+    print(Building_cons)
+
     # Calculation of energy utilization from the PV
     # Calculation of energy coming from Grid
     # ----------------------------------------------------------------------------
@@ -68,7 +75,6 @@ def simulate_clever_control(self, actions):
     # Cost_1 = 0
     # -----------------------------------------------------------------------------------------
 
-
     # Second Cost index
     # Penalty of wasted RES energy
     # This is not used in this environment version
@@ -86,7 +92,7 @@ def simulate_clever_control(self, actions):
     Cost_3 = sum(Cost_EV)
     # TODO: Existe un costo 4 que es la energía que sobra de los EV (Total_charging < 0)
     Cost_3 = Cost_3
-    Cost = (Cost_1 / 6) + Cost_3
+    Cost = (Cost_1 / 1) + Cost_3
 
     return Cost, Grid_final, RES_avail, Cost_3, BOC
     # Cost: Costo total

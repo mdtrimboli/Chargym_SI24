@@ -10,7 +10,7 @@ sns.set_theme()
 actual_date = datetime.now().date()
 
 Train = False
-algoritmo = 'ddpg'
+algoritmo = 'rbc'
 if Train:
     ### COMPARACION DE REWARD
 
@@ -51,20 +51,30 @@ else:
         E_PV_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
 
         E_tot_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
-        # (Para DDPG) Agregar 0 al inicio para equiparar con el resto
-        #E_tot_curve = [0, *E_tot_curve]
 
         if algoritmo == 'ddpg':
             E_tot_curve = [0, *E_tot_curve]
             E_PV_curve = [0, *E_PV_curve]
             E_net_curve = E_net_curve[10:]
 
-
     # CÁLCULO DE ENERGÍA COMPRADA Y SU COSTO
-    En_total = np.sum(E_net_curve[:-1])
-    print(f"Energía total de {algoritmo}: {En_total}")
-    Costo_total = np.sum(price_curve*E_net_curve[:-1])
-    print(f"Costo total de {algoritmo}: {Costo_total}")
+    if algoritmo == "ddpg":
+
+        En_total = np.sum(E_net_curve[:-1])
+        print(f"Energía total de {algoritmo}: {En_total}")
+        Costo_total = np.sum(price_curve*E_net_curve[:-1])
+        print(f"Costo total de {algoritmo}: {Costo_total}")
+    else:
+        En_total = np.sum(E_net_curve)
+        print(f"Energía total de {algoritmo}: {En_total}")
+        Costo_total = np.sum(price_curve * E_net_curve)
+        print(f"Costo total de {algoritmo}: {Costo_total}")
+
+    # Quita de último valor a vectores
+    #E_tot_curve = E_tot_curve[:-1]
+    #E_PV_curve = E_PV_curve[:-1]
+    #E_net_curve = E_net_curve[:-1]
+    #price_curve = price_curve[:-1]
 
     fig, ax1 = plt.subplots()
 
@@ -76,9 +86,10 @@ else:
     ax1.tick_params(axis='y')
     ax1.legend(loc="upper left", framealpha=0.7, facecolor='white')
     ax1.set_ylim(top=80)
+    ax1.set_xlim([0,23])
 
     ax2 = ax1.twinx()
-    ax2.set_ylabel('Cost [$/h]')
+    ax2.set_ylabel('Cost [$]')
     ax2.plot(price_curve, color='tab:red', label='Price')
     ax2.tick_params(axis='y')
     ax2.legend(loc="upper right", framealpha=0.7, facecolor='white')

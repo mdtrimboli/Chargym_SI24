@@ -122,7 +122,7 @@ def evaluate(env, agent, args, state_norm, reward_scaling=False, reward_norm=Fal
             print(len(env.Grid_Evol_mem))
 
             np.savetxt("curves/E_almacenada_red_ppo.csv", env.Grid_Evol_mem, delimiter=", ", fmt='% s')
-            np.savetxt("curves/E_almacenada_PV_ppo.csv", env.E_almac_pv, delimiter=", ", fmt='% s')
+            np.savetxt("curves/E_almacenada_PV_ppo.csv", env.Energy['Renewable'][0][:24], delimiter=", ", fmt='% s')
             # gráfico c) Perfil de carga
             # np.savetxt("curves/Presencia_autos.csv", env.Invalues['present_cars'], delimiter=", ", fmt='% s')
             np.savetxt("curves/Presencia_autos_ppo.csv", Presence, delimiter=", ", fmt='% s')
@@ -144,7 +144,7 @@ def main(args, number, seed):
 
     SAVE = False
     fecha_actual = datetime.now().date()
-    fecha_carga = '2023-11-30'  # Formato: '2023-11-22'
+    fecha_carga = '2023-12-15'  # Formato: '2023-11-22'
 
     # It will check your custom environment and output additional warnings if needed
     #check_main(env)

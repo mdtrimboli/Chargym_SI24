@@ -16,7 +16,7 @@ import time
 
 
 class ChargingEnv(gym.Env):
-    def __init__(self, price=4, solar=1):
+    def __init__(self, price=6, solar=1):
         # basic_model_parameters
         self.number_of_cars = 10            # Charging spots
         self.number_of_days = 1
@@ -168,7 +168,7 @@ class ChargingEnv(gym.Env):
         self.info = {'SOC':self.SOC, 'Presence': self.Invalues['present_cars'], 'Cost1': Cost1}
         return conditions, -reward, self.done, self.info        # Devuelve la observación, - (el costo), y si terminó los 24 steps
 
-    def reset(self, reset_flag=0):
+    def reset(self, reset_flag=1):
         self.timestep = 0
         self.day = 1
         self.done = False
