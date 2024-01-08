@@ -251,6 +251,7 @@ class DDPG:
                 print(f"Finished epoch {step / self._config.steps_per_epoch}. Running validation ...")
                 self.evaluate()
                 print("----------------------------------------------------------")
+                print(f"Proporción Costo 3 vs Costo total {np.mean(self._env.costo3) / np.mean(self._env.costototal)}")
 
         print("==========================================================")
         print(f"Finished DDPG training. Time spent: {(time.time() - start_time) // 1} secs")

@@ -31,7 +31,7 @@ def Energy_Calculation(self):
     for ii in range(0, int(days_of_experiment)):
         for jj in range(0, int((60/minutes_of_timestep)*48)):
             scaling_PV = self.PV_Param['PV_Surface']*self.PV_Param['PV_effic']/1000
-            scaling_sol = 1.5                                                       # TODO: encontrar sentido a este factor
+            scaling_sol = 1.5 * 2  #el 2 es para utilizar el doble de paneles
             xx = solar_radiation[count,0] * scaling_sol * scaling_PV * solar_flag
             # Energía PV = (radiación * factor solar * superficie * efic. PV) / 1000 [w]
             Radiation[ii, jj] = solar_radiation[count,0]        # Radiation = Array de [dias, horas]
@@ -61,6 +61,10 @@ def Energy_Calculation(self):
                            0.1, 0.1, 0.076, 0.076, 0.1, 0.082, 0.080, 0.085, 0.079, 0.086, 0.070]
         Price_day[4, :] = [0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
                            0.06, 0.06, 0.06, 0.1, 0.1, 0.1, 0.1]
+    elif price_flag == 6:
+        Price_day = np.array(
+            [0.06, 0.06, 0.06, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.06, 0.06, 0.06, 0.06, 0.1, 0.1, 0.1,
+             0.1, 0.1, 0.1, 0.07, 0.07, 0.07, 0.06, 0.06])
 
     Price_day = np.concatenate([Price_day,Price_day], axis=0)       # Concatena para obtener 48 valores (cada media hora)
     Price = np.zeros((days_of_experiment, 48))
