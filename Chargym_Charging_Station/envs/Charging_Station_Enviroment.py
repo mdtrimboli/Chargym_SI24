@@ -43,7 +43,7 @@ class ChargingEnv(gym.Env):
                          'discharging_rate': discharging_rate}
 
         # Renewable_Energy
-        PV_Surface = 2.279 * 1.134 * 20     # = 51,68772 [m2]
+        PV_Surface = 2.279 * 1.134 * 40     # = 2,584386 * 40 paneles [m2]
         PV_effic = 0.21
 
         self.PV_Param = {'PV_Surface': PV_Surface, 'PV_effic': PV_effic}
