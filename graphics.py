@@ -10,12 +10,15 @@ sns.set_theme()
 actual_date = datetime.now().date()
 
 Train = False
-algoritmo = 'rbc'
+algoritmo = 'ppo'
+fecha_ddpg = '2024-01-31'
+fecha_ppo = '2024-02-02'
+
 if Train:
     ### COMPARACION DE REWARD
 
-    rew_curves_DDPG = open('Solvers/RL/curves/Rew_DDPG.csv', 'rb')
-    rew_curves_PPO = open('Solvers/RL/curves/Rew_PPO.csv', 'rb')
+    rew_curves_DDPG = open(f'Solvers/RL/curves/Rew_DDPG_{fecha_ddpg}.csv', 'rb')
+    rew_curves_PPO = open(f'Solvers/RL/curves/Rew_PPO_{fecha_ppo}.csv', 'rb')
     data_DDPG = gaussian_filter1d(loadtxt(rew_curves_DDPG, delimiter=","), sigma=5)
     data_PPO = gaussian_filter1d(loadtxt(rew_curves_PPO, delimiter=","), sigma=5)
 
@@ -31,11 +34,11 @@ else:
 
     ### GRAFICA DE GENERACION RBC
     if algoritmo == 'rbc':
-        #TODO: Igualar la semilla a los 3 algoritmos
+
         price_curve = loadtxt(open('Solvers/RL/curves/Precio.csv', 'rb'), delimiter=",")
-        E_net_curve = loadtxt(open(f'Solvers/RBC/curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
-        E_PV_curve = loadtxt(open(f'Solvers/RBC/curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
-        E_tot_curve = loadtxt(open(f'Solvers/RBC/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
+        E_net_curve = loadtxt(open(f'algos/RBC/curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
+        E_PV_curve = loadtxt(open(f'algos/RBC/curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
+        E_tot_curve = loadtxt(open(f'algos/RBC/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
 
     else:
         ### GRAFICA DE GENERACION DDPG Y PPO
@@ -89,8 +92,8 @@ else:
 
     # GRAFICA DE CARGA
     if algoritmo == 'rbc':
-        departure_curve = loadtxt(open(f'Solvers/RBC/curves/Presencia_autos_{algoritmo}.csv', 'rb'), delimiter=",")
-        soc_curve = loadtxt(open(f'Solvers/RBC/curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")
+        departure_curve = loadtxt(open(f'algos/RBC/curves/Presencia_autos_{algoritmo}.csv', 'rb'), delimiter=",")
+        soc_curve = loadtxt(open(f'algos/RBC/curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")
     else:
         departure_curve = loadtxt(open(f'Solvers/RL/curves/Presencia_autos_{algoritmo}.csv', 'rb'), delimiter=",")
         soc_curve = loadtxt(open(f'Solvers/RL/curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")

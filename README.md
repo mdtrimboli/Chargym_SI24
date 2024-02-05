@@ -103,21 +103,21 @@ Keep in mind to include [requirements.txt](requirements.txt) for a list of Pytho
           
 
 
-- [Charging_Station_Enviroment.py](/Chargym_Charging_Station/envs/Charging_Station_Enviroment.py): Describes the general Electrical Vecicles Charging Station universe.
+- [Charging_Station_Enviroment.py](/envs/Charging_Station_Enviroment.py): Describes the general Electrical Vecicles Charging Station universe.
 
-- [Energy_Calculations.py](/Chargym_Charging_Station/utils/Energy_Calculations.py): Includes pricing profiles and calculates PV energy production.
-- [Init_Values.py](/Chargym_Charging_Station/utils/Init_Values.py): Provides initial values per day related with arrival-departure of EVs and Battery State of Charge.
-- [Simulate_Actions3.py](/Chargym_Charging_Station/utils/Simulate_Actions3.py): Demand, next state of battery, energy utilization from PV calculations and reward function.
-- [Simulate_Station3.py](/Chargym_Charging_Station/utils/Simulate_Station3.py): Calculates the leaving time of each car, while also the Battery State of Charge of each car in the station.
+- [Energy_Calculations.py](/envs/utils/Energy_Calculations.py): Includes pricing profiles and calculates PV energy production.
+- [Init_Values.py](/envs/utils/Init_Values.py): Provides initial values per day related with arrival-departure of EVs and Battery State of Charge.
+- [Simulate_Actions3.py](/envs/utils/Simulate_Actions3.py): Demand, next state of battery, energy utilization from PV calculations and reward function.
+- [Simulate_Station3.py](/envs/utils/Simulate_Station3.py): Calculates the leaving time of each car, while also the Battery State of Charge of each car in the station.
 
-- [RBC.py](Solvers/RBC/RBC.py): This implements the Rule Based Controller described in Equation 6 in the original paper. The controller checks each charging spot and collects the Departure timeplan of each connected EV. If an EV is going to depart during the next three hours, then the station is charging in full capacity this specific EV. On the other hand, if an EV does not depart during the next three hours, the station checks the current availability of the solar energy and charges the EV, based on that availability. The three hour time-limit, is selected based on the EV Charging Station attributes, since the EVs utilize 30kWh batteries, and the maximum charging ability of the station is 10kW. Thus, an EV needs three hours to charge from 0 to 100% SoC.
-- [rbc_main.py](Solvers/RBC/rbc_main.py): This is used if you want to use solely the Rule Based Controller.
+- [RBC.py](algos/RBC/RBC.py): This implements the Rule Based Controller described in Equation 6 in the original paper. The controller checks each charging spot and collects the Departure timeplan of each connected EV. If an EV is going to depart during the next three hours, then the station is charging in full capacity this specific EV. On the other hand, if an EV does not depart during the next three hours, the station checks the current availability of the solar energy and charges the EV, based on that availability. The three hour time-limit, is selected based on the EV Charging Station attributes, since the EVs utilize 30kWh batteries, and the maximum charging ability of the station is 10kW. Thus, an EV needs three hours to charge from 0 to 100% SoC.
+- [rbc_main.py](algos/RBC/rbc_main.py): This is used if you want to use solely the Rule Based Controller.
 
 - [DDPG_train.py](Solvers/RL/DDPG_train.py): This python file includes conventional DDPG implementation. __Note that when you run this script 2 additional folders will be created including log files and the trained model at different stages. The later will be used in order to evaluate the trained algorithm during the evaluation phase__.
 - [PPO_train.py](Solvers/RL/PPO_train.py): This python file includes conventional PPO implementation. __Note that when you run this script 2 additional folders will be created including log files and the trained model at different stages as in DDPG case. Logs and models have the corresponding tag 'PPO-.....'. The trained model will be used in order to evaluate the PPO algorithm during the evaluation phase__.
 
-- [check_main.py](/Solvers/check_main.py): This is to call the Chargym environment.
-- [evaluate_trained_models.py](/Solvers/evaluate_trained_models.py): This is to evaluate the trained models (DDPG,PPO and RBC).Indicatevely in paper we used the trained models at 940000 so as at lines 23 and 27 the corresponding .zip files are loaded.
+- [check_main.py](/algos/check_main.py): This is to call the Chargym environment.
+- [evaluate_trained_models.py](/algos/evaluate_trained_models.py): This is to evaluate the trained models (DDPG,PPO and RBC).Indicatevely in paper we used the trained models at 940000 so as at lines 23 and 27 the corresponding .zip files are loaded.
 
 
 
@@ -142,7 +142,7 @@ __Note that all states are normalized between 0 and 1__.
 
 ## Reward function
 
-The reward function is described in [Simulate_Actions3.py](/Chargym_Charging_Station/utils/Simulate_Actions3.py).
+The reward function is described in [Simulate_Actions3.py](/envs/utils/Simulate_Actions3.py).
 The main objective of the EVCS's controller / agent is to adopt a scheduling policy towards minimizing the cost for the electricity absorbed by the power grid. The reward function observed at each timestep _t_ is the electricity bill being payed by EVCS to the utility company (named ```Cost_1``` in line 46 which is Grid_final*self.Energy["Price"][0,hour]). However, an additional term is incorporated in order to present a more realistic and complete description ensuring that the controller will exploit effectively the available resources as well as fulfil the defined requirements. The second term considers penalizing situations involving EVs that are not completely charged (named ```Cost_3``` in line 60). The penalty factor named ```Cost_2``` that tries to describe a penalty on wasted RES energy is not considered in this version. Feel free to introduce such an extension if you want.
 
 
@@ -157,7 +157,7 @@ In case that the user wants to check his/her own controller than the provided on
 call the make method specifying the name of the model (__ChargingEnv-v0__) as in other gym environments. You can
 place your custom algorithm in Folder ->  __Solvers__.
 
-If you want to check the environment then run the file located in __Solvers__ named: [check_main.py](/Chargym_Charging_Station/Solvers/check_main.py)
+If you want to check the environment then run the file located in __Solvers__ named: [check_main.py](/env/Solvers/check_main.py)
 ```
 import gym
 import Chargym_Charging_Station
@@ -182,16 +182,16 @@ env = gym.make(args.env)
 ### Ready to Use Examples
 
 _If you want to train either DDPG or PPO using Chargym_:
-1. __You have to specify by hand the reset_flag in [Charging_Station_Enviroment.py](/Chargym_Charging_Station/envs/Charging_Station_Enviroment.py) line 89 if you want to emulate different days (__ ``` def reset(self, reset_flag=0): ``` __) or the same simulated day (__ ``` def reset(self, reset_flag=1): ``` __) across episodes__.
+1. __You have to specify by hand the reset_flag in [Charging_Station_Enviroment.py](/envs/Charging_Station_Enviroment.py) line 89 if you want to emulate different days (__ ``` def reset(self, reset_flag=0): ``` __) or the same simulated day (__ ``` def reset(self, reset_flag=1): ``` __) across episodes__.
 2. __then run [DDPG_train.py](Solvers/RL/DDPG_train.py) and [PPO_train.py](Solvers/RL/PPO_train.py)__.
 
 _If you want to evaluate the trained models_:
-1. __You have to modify by hand [Charging_Station_Enviroment.py](/Chargym_Charging_Station/envs/Charging_Station_Enviroment.py) in line 89 to:__
-``` def reset(self, reset_flag): ``` __removing the value of reset_flag__. (Explanation comment: This is because the reset_flag is specified in [evaluate_trained_models.py](/Solvers/evaluate_trained_models.py) in order to simulate diverse day configurations across episodes but the same say between all three implementations in order to evaluate them fairly as will be explained below.)
+1. __You have to modify by hand [Charging_Station_Enviroment.py](/envs/Charging_Station_Enviroment.py) in line 89 to:__
+``` def reset(self, reset_flag): ``` __removing the value of reset_flag__. (Explanation comment: This is because the reset_flag is specified in [evaluate_trained_models.py](/algos/evaluate_trained_models.py) in order to simulate diverse day configurations across episodes but the same say between all three implementations in order to evaluate them fairly as will be explained below.)
     
-2. __then run [evaluate_trained_models.py](/Solvers/evaluate_trained_models.py) and you will get the comparison performance between DDPG, PPO and RBC such as:__ 
+2. __then run [evaluate_trained_models.py](/algos/evaluate_trained_models.py) and you will get the comparison performance between DDPG, PPO and RBC such as:__ 
 ![Comparison_Evaluation_Reward](https://github.com/georkara/Chargym-Charging-Station/blob/main/Chargym_Charging_Station/images/Comparison_Evaluation_Reward.png)
- (Explanation comment: According to the previous comment related with the reset_flag, note that reset_flag=0 means that the environment simulates/emulates a new day and reset_flag=1 means that simulates the same day. This way, in order to compare two RL algorithms with the RBC the reset_flag=0 is already specified in [evaluate_trained_models.py](/Solvers/evaluate_trained_models.py) at the start of each episode (right before) calling DDPG and then changed to reset_flag=1 for the other two methods within the same episode. This way the script will simulate the same day for all three approaches at each episode, but diverse days across episodes. For more, check the comments in [evaluate_trained_models.py](/Solvers/evaluate_trained_models.py))
+ (Explanation comment: According to the previous comment related with the reset_flag, note that reset_flag=0 means that the environment simulates/emulates a new day and reset_flag=1 means that simulates the same day. This way, in order to compare two RL algorithms with the RBC the reset_flag=0 is already specified in [evaluate_trained_models.py](/algos/evaluate_trained_models.py) at the start of each episode (right before) calling DDPG and then changed to reset_flag=1 for the other two methods within the same episode. This way the script will simulate the same day for all three approaches at each episode, but diverse days across episodes. For more, check the comments in [evaluate_trained_models.py](/algos/evaluate_trained_models.py))
 
 _If you want to visualize the training_:
 1. __Use the following in the terminal: 
