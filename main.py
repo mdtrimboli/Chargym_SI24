@@ -36,7 +36,7 @@ def main(args):
             agent = PPO_Agent(env, load_date, args)
 
         agent.train()
-        agent.save_models()
+        agent.save_models(agent._ppo.actor, agent._ppo.critic, 'model')
     elif mode == "Eval":
         if (algo == "DDPG"):
             agent = DDPG_Agent(mode, env, load_date)
@@ -55,7 +55,7 @@ def main(args):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Hyperparameters Setting for ppo-continuous")
-    parser.add_argument("--max_train_steps", type=int, default=int(480000), help=" Maximum number of training steps")
+    parser.add_argument("--max_train_steps", type=int, default=int(12000), help=" Maximum number of training steps")
     parser.add_argument("--evaluation_steps", type=float, default=24,
                         help="Steps for evaluation phase")
     parser.add_argument("--evaluate_freq", type=float, default=24,

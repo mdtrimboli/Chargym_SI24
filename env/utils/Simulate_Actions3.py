@@ -10,9 +10,8 @@ def simulate_clever_control(self, actions):
     present_cars = self.Invalues['present_cars']
     leave = self.leave
     BOC = self.BOC      # SOC
-    perfil_en_cons = np.array(
-        [0.77, 0.63, 0.52, 0.46, 0.43, 0.44, 0.45, 0.52, 0.58, 0.63, 0.67, 0.71, 0.75, 0.76, 0.75, 0.73, 0.74, 0.76,
-         0.85, 0.94, 1.00, 0.99, 0.91, 0.81])
+    perfil_en_cons = np.array([0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.98, 0.97, 0.99, 0.96, 0.91, 0.90, 0.96,
+                               0.95, 0.93, 0.92, 0.87, 0.85, 0.15, 0.15, 0.15, 0.15])
     max_building_cons = 21.5 * 20  # máximo consumo diario * cantidad de hogares
 
     P_charging = np.zeros(self.number_of_cars)
@@ -89,8 +88,8 @@ def simulate_clever_control(self, actions):
         # BOC[leave[ii], hour+1] solo tiene en cuenta el SoC de los autos que se van a ir en la próxima hora
     Cost_3 = sum(Cost_EV)
 
-    Cost = Cost_1 + Cost_3 - Cost_4
-    #Cost = Cost_1 + Cost_3
+    #Cost = Cost_1 + Cost_3 + Cost_4
+    Cost = Cost_1 + Cost_3
 
     return Cost, Grid_final, RES_avail, Cost_3, Cost_4, BOC
     # Cost: Costo total
