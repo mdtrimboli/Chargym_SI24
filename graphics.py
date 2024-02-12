@@ -77,8 +77,9 @@ else:
     ax1.plot(E_tot_curve, color='tab:grey', label='Demand energy')
     ax1.tick_params(axis='y')
     ax1.legend(loc="upper left", framealpha=0.7, facecolor='white')
-    ax1.set_ylim(top=160)
+    ax1.set_ylim(top=100)
     ax1.set_xlim([0,23])
+    ax1.set_xticks(np.arange(0, 23, step=4))
 
     ax2 = ax1.twinx()
     ax2.set_ylabel('Cost [$]')

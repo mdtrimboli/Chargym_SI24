@@ -49,7 +49,7 @@ class ChargingEnv(gym.Env):
         self.cost_3 = []
         self.total_cost = []
 
-        self.EV_Param = {'charging_effic': 30, 'EV_capacity': 0.91,
+        self.EV_Param = {'charging_effic': 0.91, 'EV_capacity': 30,
                          'discharging_effic': 0.91, 'charging_rate': 11,
                          'discharging_rate': 11}
 
@@ -110,7 +110,7 @@ class ChargingEnv(gym.Env):
 
             # En_consumida_total = E. Consumida de la red + Energía consumida del panel
             tse = results['Grid_Final'] + self.pv_energy_stored
-            print(tse)
+
             Energía_desp_EV = np.zeros(len(tse))
 
             self.cost_3.append(np.mean(self.penalty_evol))

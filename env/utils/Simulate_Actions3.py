@@ -26,7 +26,6 @@ def simulate_clever_control(self, actions):
             max_charging_energy = min([10, BOC[car, hour] * self.EV_Param['EV_capacity']])
             # if action=[-1,1] P_charging[car] = 100*actions[car]/100*max_charging_energy
 
-
         if present_cars[car, hour] == 1:      # Si el auto está --> Ec (4) del paper (Pdem)
             # Divide en vez de multiplicar como en el paper
             # P_charging[car] = 100*actions[car]/100*max_charging_energy
@@ -53,6 +52,7 @@ def simulate_clever_control(self, actions):
     # RES_avail = max([0, Renewable[0, hour] - Consumed[0, hour]])                      # Siempre usa el día 0!!!
 
     Total_charging = sum(P_charging)                             # Potencia demandada y consumida por todos los autos
+
     #self.E_almacenada_total = Total_charging
     self.total_stored_energy = Total_charging
 
@@ -69,7 +69,7 @@ def simulate_clever_control(self, actions):
         RES_avail = renewable[0, hour]
         Cost_4 = 0
 
-    Grid_final = max([Total_charging - RES_Gen, 0])
+    Grid_final = max([Total_charging - RES_Gen, 0])         # Lo que se consume de la red
     Cost_1 = Grid_final*self.Energy["Price"][0, hour]       # Lo que cuesta consumir de la red (positivo)
 
     # Second Cost index
