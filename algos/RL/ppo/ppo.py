@@ -56,7 +56,7 @@ class PPO_Agent:
         torch.save(actor.state_dict(), actor_path)
         torch.save(critic.state_dict(), critic_path)
 
-    def load_models(self, actor, critic, directory, actor_filename='actor.pth', critic_filename='critic.pth'):
+    def load_models(self, actor, critic, directory, actor_filename='ppo_actor.pth', critic_filename='ppo_critic.pth'):
         """
         Carga los modelos del actor y del crítico desde el directorio especificado.
 
@@ -131,7 +131,7 @@ class PPO_Agent:
             episode_reward += r
             episode_length += 1
             ep_cost1 += info['Cost1']
-            ep_cost3 += self._env.Cost_EV
+            ep_cost3 += self._env.cost_EV
 
             if done:
                 SOC = info['SOC']
@@ -139,16 +139,13 @@ class PPO_Agent:
                 print("evaluate_length:{} \t evaluate_reward:{:.2f} \t cost_1:{:.2f}  \t cost_3:{:.2f}\t "
                       .format(episode_length, episode_reward, ep_cost1, ep_cost3))
 
-                print(len(self._env.Grid_Evol_mem))
-
-                np.savetxt("curves/E_almacenada_red_ppo.csv", self._env.Grid_Evol_mem, delimiter=", ", fmt='% s')
-                np.savetxt("curves/E_almacenada_PV_ppo.csv", self._env.Energy['Renewable'][0][:24], delimiter=", ", fmt='% s')
-                # gráfico c) Perfil de carga
-                # np.savetxt("curves/Presencia_autos.csv", env.Invalues['present_cars'], delimiter=", ", fmt='% s')
+                np.savetxt("curves/E_almacenada_red_ppo.csv", self._env.grid_hist, delimiter=", ", fmt='% s')
+                np.savetxt("curves/E_almacenada_PV_ppo.csv", self._env.Energy['Renewable'][0][:24], delimiter=", ",
+                           fmt='% s')
+                np.savetxt("curves/sb_energy.csv", self._env.consume_profile_sb, delimiter=", ", fmt='% s')
                 np.savetxt("curves/Presencia_autos_ppo.csv", Presence, delimiter=", ", fmt='% s')
-                # np.savetxt("curves/SOC.csv", env.SOC, delimiter=", ", fmt='% s')
                 np.savetxt("curves/SOC_ppo.csv", SOC, delimiter=", ", fmt='% s')
-                np.savetxt("curves/E_almacenada_total_ppo.csv", self._env.Lista_E_Almac_Total, delimiter=", ", fmt='% s')
+                np.savetxt("curves/E_almacenada_total_ppo.csv", self._env.hist_tse, delimiter=", ", fmt='% s')
 
                 s = self._env.reset()
                 episode_reward = 0

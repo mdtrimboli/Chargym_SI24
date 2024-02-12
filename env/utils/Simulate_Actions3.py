@@ -10,9 +10,8 @@ def simulate_clever_control(self, actions):
     present_cars = self.Invalues['present_cars']
     leave = self.leave
     BOC = self.BOC      # SOC
-    perfil_en_cons = np.array([0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.98, 0.97, 0.99, 0.96, 0.91, 0.90, 0.96,
-                               0.95, 0.93, 0.92, 0.87, 0.85, 0.15, 0.15, 0.15, 0.15])
-    max_building_cons = 21.5 * 20  # máximo consumo diario * cantidad de hogares
+    perfil_en_cons = self.consume_profile_sb
+    #max_building_cons = 21.5 * 20  # máximo consumo diario * cantidad de hogares
 
     P_charging = np.zeros(self.number_of_cars)
 
@@ -46,7 +45,7 @@ def simulate_clever_control(self, actions):
 
     # Calculation of load electricity consumption
     # ----------------------------------------------------------------------------
-    building_consume = perfil_en_cons[hour] * max_building_cons
+    building_consume = perfil_en_cons[hour]
 
     # Calculation of energy utilization from the PV
     # Calculation of energy coming from Grid
@@ -64,7 +63,7 @@ def simulate_clever_control(self, actions):
 
     if Total_charging >= 0:      # Solo se calcula el sobrante de energía PV y el consumo de la red si los autos consumieron erengía
         RES_avail = max([RES_Gen - Total_charging, 0])      # Solo hay energía sobrante si generó más
-        Cost_4 = (RES_avail - building_consume) * self.Energy["Price"][0, hour]      # Agrego el costo referido al EV_Wasted
+        Cost_4 = (RES_avail - building_consume) * self.Energy["Price"][0, hour]      # TODO: Corregir
     else:
         RES_avail = renewable[0, hour]
         Cost_4 = 0

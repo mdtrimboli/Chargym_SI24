@@ -11,13 +11,13 @@ from env.Charging_Station_Enviroment import ChargingEnv
 
 def main(args):
 
-    load_date = '2024-01-31'  # Formato: '2023-11-22'
+    load_date = '2024-02-12'  # Formato: '2023-11-22'
 
     config = Config.get().main.trainer
 
 
     algo = "PPO"
-    mode = "Train"
+    mode = "Eval"
 
     #env = gym.make('ChargingEnv-v0')
     env = ChargingEnv()
@@ -41,12 +41,13 @@ def main(args):
         if (algo == "DDPG"):
             agent = DDPG_Agent(mode, env, load_date)
         else:
+            args.state_dim = env.observation_space.shape[0]
+            args.action_dim = env.action_space.shape[0]
+            args.max_action = float(env.action_space.high[0])
+            args.max_episode_steps = 200
             agent = PPO_Agent(env, load_date, args)
-        agent.load_models()
+        agent.load_models(agent._ppo.actor, agent._ppo.critic, 'model')
         agent.evaluate()
-
-
-
 
 
 
@@ -55,7 +56,7 @@ def main(args):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Hyperparameters Setting for ppo-continuous")
-    parser.add_argument("--max_train_steps", type=int, default=int(12000), help=" Maximum number of training steps")
+    parser.add_argument("--max_train_steps", type=int, default=int(240000), help=" Maximum number of training steps")
     parser.add_argument("--evaluation_steps", type=float, default=24,
                         help="Steps for evaluation phase")
     parser.add_argument("--evaluate_freq", type=float, default=24,

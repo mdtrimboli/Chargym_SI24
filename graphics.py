@@ -12,7 +12,7 @@ actual_date = datetime.now().date()
 Train = False
 algoritmo = 'ppo'
 fecha_ddpg = '2024-01-31'
-fecha_ppo = '2024-02-02'
+fecha_ppo = '2024-02-12'
 
 if Train:
     ### COMPARACION DE REWARD
@@ -36,16 +36,18 @@ else:
     if algoritmo == 'rbc':
 
         price_curve = loadtxt(open('Solvers/RL/curves/Precio.csv', 'rb'), delimiter=",")
+
         E_net_curve = loadtxt(open(f'algos/RBC/curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
         E_PV_curve = loadtxt(open(f'algos/RBC/curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
         E_tot_curve = loadtxt(open(f'algos/RBC/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
 
     else:
         ### GRAFICA DE GENERACION DDPG Y PPO
-        price_curve = loadtxt(open('Solvers/RL/curves/Precio.csv', 'rb'), delimiter=",")
-        E_net_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
-        E_PV_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
-        E_tot_curve = loadtxt(open(f'Solvers/RL/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
+        price_curve = loadtxt(open('curves/Precio.csv', 'rb'), delimiter=",")
+        sb_consume_curve = loadtxt(open('curves/sb_energy.csv', 'rb'), delimiter=",")
+        E_net_curve = loadtxt(open(f'curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
+        E_PV_curve = loadtxt(open(f'curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
+        E_tot_curve = loadtxt(open(f'curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
 
         if algoritmo == 'ddpg':
             E_tot_curve = [0, *E_tot_curve]
@@ -69,12 +71,13 @@ else:
 
     ax1.set_xlabel('Time [h]')
     ax1.set_ylabel('Energy [KWh]')
+    ax1.plot(sb_consume_curve, color='tab:orange', label='SB Consume')
     ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
     ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
     ax1.plot(E_tot_curve, color='tab:grey', label='Demand energy')
     ax1.tick_params(axis='y')
     ax1.legend(loc="upper left", framealpha=0.7, facecolor='white')
-    ax1.set_ylim(top=80)
+    ax1.set_ylim(top=160)
     ax1.set_xlim([0,23])
 
     ax2 = ax1.twinx()
@@ -86,7 +89,7 @@ else:
 
 
 
-    plt.savefig(f'Solvers/RL/curves/Energy_comp_{actual_date}_{algoritmo}.png', dpi=600)
+    plt.savefig(f'curves/Energy_comp_{actual_date}_{algoritmo}.png', dpi=600)
     plt.show()
 
 
@@ -95,8 +98,8 @@ else:
         departure_curve = loadtxt(open(f'algos/RBC/curves/Presencia_autos_{algoritmo}.csv', 'rb'), delimiter=",")
         soc_curve = loadtxt(open(f'algos/RBC/curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")
     else:
-        departure_curve = loadtxt(open(f'Solvers/RL/curves/Presencia_autos_{algoritmo}.csv', 'rb'), delimiter=",")
-        soc_curve = loadtxt(open(f'Solvers/RL/curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")
+        departure_curve = loadtxt(open(f'curves/Presencia_autos_{algoritmo}.csv', 'rb'), delimiter=",")
+        soc_curve = loadtxt(open(f'curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")
 
     departure_curve = np.hstack((departure_curve[:, -1].reshape(-1, 1), departure_curve[:, :-1]))
 
