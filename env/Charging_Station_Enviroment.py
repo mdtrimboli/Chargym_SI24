@@ -110,6 +110,8 @@ class ChargingEnv(gym.Env):
 
             # En_consumida_total = E. Consumida de la red + Energía consumida del panel
             tse = results['Grid_Final'] + self.pv_energy_stored
+            print(tse)
+            Energía_desp_EV = np.zeros(len(tse))
 
             self.cost_3.append(np.mean(self.penalty_evol))
             self.total_cost.append(np.mean(self.hist_cost))
@@ -299,15 +301,15 @@ class ChargingEnv(gym.Env):
                     # TODO: Comprender mejor el paso a paso de esta parte
 
                     if hour < Departure[car][ii]:  # Si la hora que de salida > a la actual
-                        Departure_hour.append(Departure[car][
-                                                  ii] - hour)  # --> Se guarda la cantidad de horas que falta para que salga de cada auto
+                        Departure_hour.append(Departure[car][ii] - hour)
+                        # Se guarda la cantidad de horas que falta para que salga de cada auto
                         break
                         # Departure[car] tiene varias horas de salida para cada auto para un día
 
         # calculation of the BOC of each car
         Battery = []
         for car in range(number_of_cars):
-            Battery.append(self.BOC[car, hour])  # Guarda en Battery[] los SoC de cada auto
+            Battery.append(BOC[car, hour])  # Guarda en Battery[] los SoC de cada auto
         #############################################################
 
         return leave, Departure_hour, Battery
