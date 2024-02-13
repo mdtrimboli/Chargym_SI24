@@ -11,13 +11,13 @@ from env.Charging_Station_Enviroment import ChargingEnv
 
 def main(args):
 
-    load_date = '2024-02-12'  # Formato: '2023-11-22'
+    load_date = '2024-02-13'  # Formato: '2023-11-22'
 
     config = Config.get().main.trainer
 
 
     algo = "PPO"
-    mode = "Eval"
+    mode = "Train"
 
     #env = gym.make('ChargingEnv-v0')
     env = ChargingEnv()

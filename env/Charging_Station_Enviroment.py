@@ -60,8 +60,8 @@ class ChargingEnv(gym.Env):
 
         self.current_folder = os.path.realpath(os.path.join(os.path.dirname(__file__), '')) + '\\Files\\'
 
-        low = np.array(np.zeros(8+2*self.number_of_cars), dtype=np.float32)     # Lower threshold of state space
-        high = np.array(np.ones(8+2*self.number_of_cars), dtype=np.float32)     # Upper threshold of state space
+        low = np.array(np.zeros(3*4+2*self.number_of_cars), dtype=np.float32)     # Lower threshold of state space
+        high = np.array(np.ones(3*4+2*self.number_of_cars), dtype=np.float32)     # Upper threshold of state space
         # Definicion de espacio de accion
         self.action_space = spaces.Box(low=-1, high=1, shape=(self.number_of_cars,), dtype=np.float32)
         # Definicion de espacio de estados
@@ -111,7 +111,7 @@ class ChargingEnv(gym.Env):
             # En_consumida_total = E. Consumida de la red + Energía consumida del panel
             tse = results['Grid_Final'] + self.pv_energy_stored
 
-            Energía_desp_EV = np.zeros(len(tse))
+            Energia_desp_EV = np.zeros(len(tse))
 
             self.cost_3.append(np.mean(self.penalty_evol))
             self.total_cost.append(np.mean(self.hist_cost))
@@ -177,18 +177,32 @@ class ChargingEnv(gym.Env):
         # Departure_hour: Hora que falta para salir
         [self.leave, Departure_hour, Battery] = self.simulate_station()
 
-        disturbances = np.array([self.Energy["Radiation"][0, self.timestep] / 1000, self.Energy["Price"][0, self.timestep] / 0.1])
+        #disturbances = np.array([self.Energy["Radiation"][0, self.timestep] / 1000, self.Energy["Price"][0, self.timestep] / 0.1])
+        disturbances = np.array(
+            [self.Energy["Radiation"][0, self.timestep] / 1000,
+             self.Energy["Price"][0, self.timestep] / 0.1,
+             self.consume_profile_sb[self.timestep]])
         # disturbances = [Radiación Actual / 1000, Precio Actual / 0.1] --> para mapear a [0,1]
 
-        predictions = np.concatenate((np.array([self.Energy["Radiation"][0, self.timestep + 1:self.timestep + 4] / 1000]),
-                                      np.array([self.Energy["Price"][0, self.timestep + 1:self.timestep + 4] / 0.1])), axis=None),
-        # predictions = [Rad+1; Rad+4, Precio+1; Precio+4]
+        #predictions = np.concatenate((np.array([self.Energy["Radiation"][0, self.timestep + 1:self.timestep + 4] / 1000]), np.array([self.Energy["Price"][0, self.timestep + 1:self.timestep + 4] / 0.1])), axis=None)
+        predictions = np.concatenate((np.array(
+            [self.Energy["Radiation"][0, self.timestep + 1:self.timestep + 4] / 1000]), np.array(
+            [self.Energy["Price"][0, self.timestep + 1:self.timestep + 4] / 0.1]), np.array(
+            [self.consume_profile_sb])[0, self.timestep + 1:self.timestep + 4]), axis=None)
+
+        # predictions = [Rad+1; Rad+3, Precio+1; Precio+3]
 
         states = np.concatenate((np.array(Battery), np.array(Departure_hour)/24), axis=None)
         # states = [SoC1; SoC10, Horas para salir1; Horas para salir10]
 
-        observations = np.concatenate((disturbances, predictions, states), axis=None)
+
+        observations = np.concatenate((disturbances, predictions, states), axis=None)   # State
         # observations = [disturbances, predictions, states]
+
+        print(self.timestep)
+        print(observations.shape)
+        print(observations)
+
         return observations
 
     def energy_calculation(self):
