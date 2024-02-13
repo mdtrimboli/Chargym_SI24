@@ -39,7 +39,7 @@ class ChargingEnv(gym.Env):
         self.BOC = 0
 
         self.prof_sb = np.array([0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.25, 0.51, 0.73, 0.9, 0.98, 1, 0.87, 0.92, 0.9, 0.85,
-                               0.76, 0.55, 0.37, 0.25, 0.2, 0.2, 0.2])
+                               0.76, 0.55, 0.37, 0.25, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2])
         #self.max_building_cons = 21.5 * 20
         self.max_building_cons = 60.
 
@@ -198,10 +198,6 @@ class ChargingEnv(gym.Env):
 
         observations = np.concatenate((disturbances, predictions, states), axis=None)   # State
         # observations = [disturbances, predictions, states]
-
-        print(self.timestep)
-        print(observations.shape)
-        print(observations)
 
         return observations
 
