@@ -94,7 +94,7 @@ def simulate_clever_control(self, actions):
     Cost_3 = sum(Cost_EV)
 
     #Cost = Cost_1 + Cost_3 + Cost_4
-    Cost = Cost_1 + Cost_3
+    Cost = Cost_1 * (0.4) + Cost_3 * (0.6)
 
     return Cost, Grid_final, En_wasted, Cost_3, BOC
     # Cost: Costo total

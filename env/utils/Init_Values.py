@@ -28,7 +28,8 @@ def InitialValues_per_day(self):
                     pointer = pointer+1
                     Arrival_car.append(hour)
                     upper_limit = min(hour + 10, 25)
-                    Departure_car.append(random.randint(hour+4,int(upper_limit)))
+                    #Departure_car.append(random.randint(hour+4,int(upper_limit)))
+                    Departure_car.append(random.randint(hour + 6, int(upper_limit)))
                     # El auto se queda desde 4 hasta 10 hs, siempre dentro del mismo día
             ###########################################################################################################
 

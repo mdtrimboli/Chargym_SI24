@@ -15,11 +15,12 @@ import time
 
 
 class ChargingEnv(gym.Env):
-    def __init__(self, price=6, solar=1):
+    def __init__(self, price=6, solar=1, reset_flag=0):
 
         # Parameters
         self.number_of_cars = 10
         self.number_of_days = 1
+        self.reset_flag = reset_flag
         self.price_flag = price             # Curva de precio elegida
         self.solar_flag = solar             # Habilitacion del Panel PV
         self.done = False
@@ -76,7 +77,7 @@ class ChargingEnv(gym.Env):
     def step(self, actions):
 
         # Cost_EV: Costo por no cargar 100% un auto,
-        [reward, grid, en_wasted, self.cost_EV, self.cost_SG, self.BOC] \
+        [reward, grid, en_wasted, self.cost_EV, self.BOC] \
             = Simulate_Actions3.simulate_clever_control(self, actions)
 
         self.SOC = self.BOC
@@ -131,7 +132,7 @@ class ChargingEnv(gym.Env):
 
 
 
-    def reset(self, reset_flag=0):
+    def reset(self):
         self.timestep = 0
         self.day = 1
         self.done = False
@@ -145,7 +146,7 @@ class ChargingEnv(gym.Env):
         self.Energy = {'Consumed': consumed, 'Renewable': renewable, 'Price': price, 'Radiation': radiation}
         ######################################################################################
 
-        if reset_flag == 0:   # RESETEO
+        if self.reset_flag == 0:   # RESETEO
 
             # ArrivalT: Hora de llegada de cada auto
             # DepartureT: Hora de salida de cada auto

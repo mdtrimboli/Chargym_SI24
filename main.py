@@ -11,7 +11,7 @@ from env.Charging_Station_Enviroment import ChargingEnv
 
 def main(args):
 
-    load_date = '2024-02-13'  # Formato: '2023-11-22'
+    load_date = '2024-02-14'  # Formato: '2023-11-22'
 
     config = Config.get().main.trainer
 
@@ -20,11 +20,11 @@ def main(args):
     mode = "Eval"
 
     #env = gym.make('ChargingEnv-v0')
-    env = ChargingEnv()
 
     #check_env(env)
 
     if mode == "Train":
+        env = ChargingEnv()
         if (algo == "DDPG"):
             agent = DDPG_Agent(mode, env, load_date)
         else:
@@ -38,6 +38,7 @@ def main(args):
         agent.train()
         agent.save_models(agent._ppo.actor, agent._ppo.critic, 'model')
     elif mode == "Eval":
+        env = ChargingEnv(reset_flag=1)
         if (algo == "DDPG"):
             agent = DDPG_Agent(mode, env, load_date)
         else:
@@ -56,7 +57,7 @@ def main(args):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Hyperparameters Setting for ppo-continuous")
-    parser.add_argument("--max_train_steps", type=int, default=int(480000), help=" Maximum number of training steps")
+    parser.add_argument("--max_train_steps", type=int, default=int(400000), help=" Maximum number of training steps")
     parser.add_argument("--evaluation_steps", type=float, default=24,
                         help="Steps for evaluation phase")
     parser.add_argument("--evaluate_freq", type=float, default=24,

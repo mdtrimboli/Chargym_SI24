@@ -12,7 +12,7 @@ actual_date = datetime.now().date()
 Train = False
 algoritmo = 'ppo'
 fecha_ddpg = '2024-01-31'
-fecha_ppo = '2024-02-13'
+fecha_ppo = '2024-02-14'
 
 if Train:
     ### COMPARACION DE REWARD
@@ -45,6 +45,7 @@ else:
         ### GRAFICA DE GENERACION DDPG Y PPO
         price_curve = loadtxt(open('curves/Precio.csv', 'rb'), delimiter=",")
         sb_consume_curve = loadtxt(open('curves/sb_energy.csv', 'rb'), delimiter=",")
+        ev_consume_curve = loadtxt(open('curves/EV_consume.csv', 'rb'), delimiter=",")
         E_net_curve = loadtxt(open(f'curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
         E_PV_curve = loadtxt(open(f'curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
         E_tot_curve = loadtxt(open(f'curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
@@ -71,13 +72,14 @@ else:
 
     ax1.set_xlabel('Time [h]')
     ax1.set_ylabel('Energy [KWh]')
-    ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
-    ax1.plot(E_tot_curve, color='tab:grey', label='EV Demand')
+    #ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
+    #ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
+    #ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
     ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
-    ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
+    #ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
     ax1.tick_params(axis='y')
     ax1.legend(loc="upper left", framealpha=0.7, facecolor='white')
-    ax1.set_ylim(top=100)
+    ax1.set_ylim(top=120)
     ax1.set_xlim([0,23])
     ax1.set_xticks(np.arange(0, 23, step=4))
 
@@ -135,6 +137,6 @@ else:
     fig.legend(lines, labels, loc='lower center', ncol=2)
 
     # Mostrar el gráfico
-    plt.savefig(f'Solvers/RL/curves/Charging_{actual_date}_{algoritmo}.png', dpi=600)
+    plt.savefig(f'curves/Charging_{actual_date}_{algoritmo}.png', dpi=600)
     plt.show()
 

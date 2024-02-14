@@ -136,12 +136,15 @@ class PPO_Agent:
             if done:
                 SOC = info['SOC']
                 Presence = info['Presence']
+                Price = np.array([0.06, 0.06, 0.06, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.06, 0.06, 0.06, 0.06, 0.1,
+                                  0.1, 0.1, 0.1, 0.1, 0.1, 0.07, 0.07, 0.07, 0.06, 0.06])
                 print("evaluate_length:{} \t evaluate_reward:{:.2f} \t cost_1:{:.2f}  \t cost_3:{:.2f}\t "
                       .format(episode_length, episode_reward, ep_cost1, ep_cost3))
-
+                np.savetxt("curves/Precio.csv", Price, delimiter=", ", fmt='% s')
                 np.savetxt("curves/E_almacenada_red_ppo.csv", self._env.grid_hist, delimiter=", ", fmt='% s')
                 np.savetxt("curves/E_almacenada_PV_ppo.csv", self._env.Energy['Renewable'][0][:24], delimiter=", ",
                            fmt='% s')
+                np.savetxt("curves/EV_consume.csv", self._env.hist_ese, delimiter=", ", fmt='% s')
                 np.savetxt("curves/sb_energy.csv", self._env.consume_profile_sb, delimiter=", ", fmt='% s')
                 np.savetxt("curves/Presencia_autos_ppo.csv", Presence, delimiter=", ", fmt='% s')
                 np.savetxt("curves/SOC_ppo.csv", SOC, delimiter=", ", fmt='% s')
