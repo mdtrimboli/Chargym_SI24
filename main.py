@@ -11,13 +11,13 @@ from env.Charging_Station_Enviroment import ChargingEnv
 
 def main(args):
 
-    load_date = '2024-01-31'  # Formato: '2023-11-22'
+    load_date = '2024-02-13'  # Formato: '2023-11-22'
 
     config = Config.get().main.trainer
 
 
     algo = "PPO"
-    mode = "Train"
+    mode = "Eval"
 
     #env = gym.make('ChargingEnv-v0')
     env = ChargingEnv()
@@ -36,17 +36,18 @@ def main(args):
             agent = PPO_Agent(env, load_date, args)
 
         agent.train()
-        agent.save_models()
+        agent.save_models(agent._ppo.actor, agent._ppo.critic, 'model')
     elif mode == "Eval":
         if (algo == "DDPG"):
             agent = DDPG_Agent(mode, env, load_date)
         else:
+            args.state_dim = env.observation_space.shape[0]
+            args.action_dim = env.action_space.shape[0]
+            args.max_action = float(env.action_space.high[0])
+            args.max_episode_steps = 200
             agent = PPO_Agent(env, load_date, args)
-        agent.load_models()
+        agent.load_models(agent._ppo.actor, agent._ppo.critic, 'model')
         agent.evaluate()
-
-
-
 
 
 
