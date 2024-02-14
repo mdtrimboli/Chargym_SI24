@@ -51,10 +51,11 @@ def simulate_clever_control(self, actions):
     # ----------------------------------------------------------------------------
     # RES_avail = max([0, Renewable[0, hour] - Consumed[0, hour]])                      # Siempre usa el día 0!!!
 
-    # Total_charging = sum(P_charging)                             # Potencia demandada y consumida por todos los autos
+    EV_charging = sum(P_charging)                             # Potencia demandada y consumida por todos los autos
+
     Total_charging = sum(P_charging) + building_consume            # Agregado al Total_charging el consumo del edificio
 
-    # self.E_almacenada_total = Total_charging
+    self.ev_stored_energy = EV_charging
     self.total_stored_energy = Total_charging
 
     ##############################################################################
@@ -64,10 +65,13 @@ def simulate_clever_control(self, actions):
     RES_Gen = max([0, renewable[0, hour]])
 
     if Total_charging >= 0:      # Sobrante de energía PV y el consumo de la red si los autos consumieron erengía
-        RES_avail = max([RES_Gen - Total_charging, 0])      # Solo hay energía sobrante si generó más
+        RES_wasted = max([RES_Gen - Total_charging, 0])      # Solo hay energía sobrante si generó más
+        EV_Wasted = 0
     else:
-        RES_avail = renewable[0, hour]
+        RES_wasted = renewable[0, hour]
         EV_Wasted = - Total_charging                        # Remanente de energía de los autos
+
+    En_wasted = RES_wasted + EV_Wasted
 
     Grid_final = max([Total_charging - RES_Gen, 0])             # Lo que se consume de la red
     Cost_1 = Grid_final*self.Energy["Price"][0, hour]           # Costo por consumo de la red (positivo)
@@ -92,7 +96,7 @@ def simulate_clever_control(self, actions):
     #Cost = Cost_1 + Cost_3 + Cost_4
     Cost = Cost_1 + Cost_3
 
-    return Cost, Grid_final, RES_avail, Cost_3, BOC
+    return Cost, Grid_final, En_wasted, Cost_3, BOC
     # Cost: Costo total
     # Grid_final: Lo que se consume de la red
     # Cost_3: Costo por no cargar 100% un auto,

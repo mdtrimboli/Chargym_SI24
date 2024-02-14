@@ -25,9 +25,11 @@ class ChargingEnv(gym.Env):
         self.done = False
 
         self.grid_hist = []                 # Grid_Evol_mem
+        self.ev_stored_energy = 0
         self.total_stored_energy = 0        # E_almacenada_total
         self.SOC = []
-        self.hist_tse = []                  # Lista_E_Almac_Total
+        self.hist_tse = []                  # Lista_E_Consumida_Total
+        self.hist_ese = []                  # Lista_E_Almac_Total
         self.timestep = 0
         self.cost_EV = 0
         self.pv_energy_stored = 0
@@ -74,7 +76,7 @@ class ChargingEnv(gym.Env):
     def step(self, actions):
 
         # Cost_EV: Costo por no cargar 100% un auto,
-        [reward, grid, res_wasted, self.cost_EV, self.cost_SG, self.BOC] \
+        [reward, grid, en_wasted, self.cost_EV, self.cost_SG, self.BOC] \
             = Simulate_Actions3.simulate_clever_control(self, actions)
 
         self.SOC = self.BOC
@@ -83,7 +85,7 @@ class ChargingEnv(gym.Env):
 
         self.grid_hist.append(grid)
         self.grid_evol.append(grid)
-        self.res_wasted_evol.append(res_wasted)
+        self.res_wasted_evol.append(en_wasted)
         self.penalty_evol.append(self.cost_EV)
         self.hist_cost.append(reward)
 
@@ -91,7 +93,10 @@ class ChargingEnv(gym.Env):
         # Guarda el Total_Charging en un vector
         if self.timestep == 0:
             self.hist_tse.clear()
+            self.hist_ese.clear()
         self.hist_tse.append(self.total_stored_energy)
+        self.hist_ese.append(self.ev_stored_energy)
+
 
         # ------------------------------------------------------------------------------------------------------
 
