@@ -69,79 +69,65 @@ else:
         print(f"Costo total de {algoritmo}: {Costo_total}")
 
     sb_consume_curve = sb_consume_curve[:-4]
-    # Cálculo de composición porcentual de consumo SB
-    #porcentaje de SB respecto total
-    sb_porc = E_tot_curve / sb_consume_curve
-    # cantidad de energía red va al SB respecto total
-    e_net_curve_SB = E_net_curve * sb_porc
-    # cantidad de energía PV va al SB respecto total
-    e_PV_curve_SB = E_PV_curve * sb_porc
-    # cantidad de energía EV va al SB respecto total
+    sb_porc = []
+    e_net_curve_SB = []
+    e_PV_curve_SB = []
     e_EV_curve_SB = []
-    for a in range(len(sb_consume_curve)-1):
-        e_EV_curve_SB[a] = max([0, sb_consume_curve[a]-e_net_curve_SB[a]-e_PV_curve_SB[a]])
+    porcentaje_e_net_curve_SB = []
+    porcentaje_e_PV_curve_SB = []
+    porcentaje_e_EV_curve_SB = []
+    Total = []
+    Total_sin_EV = []
+    for a in range(len(sb_consume_curve)):
+
+        # Cálculo de composición porcentual de consumo SB
+        #porcentaje de SB respecto total
+        sb_porc.append(min([sb_consume_curve[a] / E_tot_curve[a], 1])) # cuando E_tot_curve < sb_consume_curve es porque los vehículos están entregando energía
+        # cantidad de energía red va al SB respecto total
+        e_net_curve_SB.append(min([E_net_curve[a] * sb_porc[a], sb_consume_curve[a]])) # no puede superar el sb_consume_curve
+        # cantidad de energía PV va al SB respecto total
+        e_PV_curve_SB.append(min([E_PV_curve[a] * sb_porc[a], sb_consume_curve[a]])) # no puede superar el sb_consume_curve
+        # cantidad de energía EV va al SB respecto total
+
+        np.array(e_EV_curve_SB.append(max([0, sb_consume_curve[a]-e_net_curve_SB[a]-e_PV_curve_SB[a]])))
+        # porcentajes de energía de SB
+        porcentaje_e_net_curve_SB.append(e_net_curve_SB[a] / sb_consume_curve[a])
+        porcentaje_e_PV_curve_SB.append(e_PV_curve_SB[a] / sb_consume_curve[a])
+        porcentaje_e_EV_curve_SB.append(e_EV_curve_SB[a] / sb_consume_curve[a])
+
+        Total.append(porcentaje_e_net_curve_SB[a] + porcentaje_e_PV_curve_SB[a] + porcentaje_e_EV_curve_SB[a])
+        Total_sin_EV.append(porcentaje_e_net_curve_SB[a] + porcentaje_e_PV_curve_SB[a])
+
+    #print(f"sb_consume_curve: {sb_consume_curve}")
+    #print(f"e_net_curve_SB: {porcentaje_e_net_curve_SB}")
+    #print(f"e_PV_curve_SB: {porcentaje_e_PV_curve_SB}")
+    #print(f"e_EV_curve_SB: {porcentaje_e_EV_curve_SB}")
+
+    index = np.arange(len(sb_consume_curve))
+    fig, ax = plt.subplots()
+    ax.bar(index, Total, label = 'Porcentaje EV')
+    ax.bar(index, Total_sin_EV, label = 'Porcentaje red')
+    ax.bar(index, porcentaje_e_PV_curve_SB, label = 'Porcentaje PV')
+    ax.plot(E_PV_curve/55.5, color='tab:green', label='PV energy')
+    ax.plot(price_curve/0.1, color='tab:red', label='Price')
+    ax.legend(loc="upper left", framealpha=0.7, facecolor='white')
+
+    plt.show
 
 
-    fig, ax1 = plt.subplots()
 
-    ax1.set_xlabel('Time [h]')
-    ax1.set_ylabel('Energy [KWh]')
     #ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
     #ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
     #ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
-    ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
+    #ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
     #ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
-    ax1.tick_params(axis='y')
-    ax1.legend(loc="upper left", framealpha=0.7, facecolor='white')
-    ax1.set_ylim(top=120)
-    ax1.set_xlim([0,23])
-    ax1.set_xticks(np.arange(0, 23, step=4))
 
-    ax2 = ax1.twinx()
-    ax2.set_ylabel('Cost [$]')
-    ax2.plot(price_curve, color='tab:red', label='Price')
-    ax2.tick_params(axis='y')
-    ax2.legend(loc="upper right", framealpha=0.7, facecolor='white')
-    ax2.set_ylim(top=0.12)
 
 
 
     plt.savefig(f'curves/Energy_comp_{actual_date}_{algoritmo}.png', dpi=600)
     plt.show()
 
-
-    # GRAFICA DE CARGA
-    if algoritmo == 'rbc':
-        departure_curve = loadtxt(open(f'algos/RBC/curves/Presencia_autos_{algoritmo}.csv', 'rb'), delimiter=",")
-        soc_curve = loadtxt(open(f'algos/RBC/curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")
-    else:
-        departure_curve = loadtxt(open(f'curves/Presencia_autos_{algoritmo}.csv', 'rb'), delimiter=",")
-        soc_curve = loadtxt(open(f'curves/SOC_{algoritmo}.csv', 'rb'), delimiter=",")
-
-    departure_curve = np.hstack((departure_curve[:, -1].reshape(-1, 1), departure_curve[:, :-1]))
-
-    # Crear el subplot de 2 filas y 5 columnas
-    fig, axs = plt.subplots(2, 5, figsize=(12, 6))
-    k = 0
-    # Rellenar cada subgráfico con los datos
-    for i in range(2):
-        for j in range(5):
-            k += 1
-            #axs[i, j].plot(departure_curve[k-1, :], label='departure', color='red')
-            axs[i, j].step(range(25), departure_curve[k - 1, :], label='Presence', color='green')
-            axs[i, j].plot(soc_curve[k-1, :], label='SoC', color='blue')
-            axs[i, j].set_title(f'EV Spot {k}')
-
-    #lines_labels = [ax.get_legend_handles_labels() for ax in fig.axes]
-    #lines, labels = [sum(lol, []) for lol in zip(*lines_labels)]
-
-    axs[0, 0].set_ylabel('SOC')
-    axs[1, 0].set_ylabel('SOC')
-    axs[1, 0].set_xlabel('Time [hour]')
-    axs[1, 1].set_xlabel('Time [hour]')
-    axs[1, 2].set_xlabel('Time [hour]')
-    axs[1, 3].set_xlabel('Time [hour]')
-    axs[1, 4].set_xlabel('Time [hour]')
 
     # Ajustar el diseño para evitar superposiciones
 
