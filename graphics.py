@@ -76,7 +76,7 @@ else:
     #ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
     #ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
     ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
-    #ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
+    ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
     ax1.tick_params(axis='y')
     ax1.legend(loc="upper left", framealpha=0.7, facecolor='white')
     ax1.set_ylim(top=120)

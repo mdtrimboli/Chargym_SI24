@@ -68,6 +68,8 @@ else:
         Costo_total = np.sum(price_curve * E_net_curve)
         print(f"Costo total de {algoritmo}: {Costo_total}")
 
+
+    # Cálculo de composición porcentual de consumo SB
     sb_consume_curve = sb_consume_curve[:-4]
     sb_porc = []
     e_net_curve_SB = []
@@ -80,7 +82,7 @@ else:
     Total_sin_EV = []
     for a in range(len(sb_consume_curve)):
 
-        # Cálculo de composición porcentual de consumo SB
+
         #porcentaje de SB respecto total
         sb_porc.append(min([sb_consume_curve[a] / E_tot_curve[a], 1])) # cuando E_tot_curve < sb_consume_curve es porque los vehículos están entregando energía
         # cantidad de energía red va al SB respecto total
@@ -108,35 +110,25 @@ else:
     ax.bar(index, Total, label = 'Porcentaje EV')
     ax.bar(index, Total_sin_EV, label = 'Porcentaje red')
     ax.bar(index, porcentaje_e_PV_curve_SB, label = 'Porcentaje PV')
-    ax.plot(E_PV_curve/55.5, color='tab:green', label='PV energy')
-    ax.plot(price_curve/0.1, color='tab:red', label='Price')
+
+
+    ax.plot(E_PV_curve/np.amax(E_PV_curve), color='tab:green', label='PV energy')
+    ax.plot(price_curve/np.amax(price_curve), color='tab:red', label='Price')
+    ax.plot(sb_consume_curve/np.amax(sb_consume_curve), color='tab:orange', label='SB Demand')
+    #ax.plot(E_tot_curve/np.amax(E_tot_curve), color='tab:grey', label='Total Consume')
+    #ax.plot(ev_consume_curve/np.amax(ev_consume_curve), color='tab:cyan', label='EV Consume')
+    #ax.plot(E_net_curve/np.amax(E_net_curve), color='tab:blue', label='Power grid energy')
+
     ax.legend(loc="upper left", framealpha=0.7, facecolor='white')
 
-    plt.show
-
-
-
-    #ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
-    #ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
-    #ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
-    #ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
-    #ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
 
 
 
 
-    plt.savefig(f'curves/Energy_comp_{actual_date}_{algoritmo}.png', dpi=600)
+
+
+
+    plt.savefig(f'curves/Comsume_perce_{actual_date}_{algoritmo}.png', dpi=600)
     plt.show()
 
-
-    # Ajustar el diseño para evitar superposiciones
-
-    plt.tight_layout()
-    plt.subplots_adjust(bottom=0.15, hspace=0.3)
-    lines, labels = axs[0, 0].get_legend_handles_labels()
-    fig.legend(lines, labels, loc='lower center', ncol=2)
-
-    # Mostrar el gráfico
-    plt.savefig(f'curves/Charging_{actual_date}_{algoritmo}.png', dpi=600)
-    plt.show()
 
