@@ -71,62 +71,39 @@ else:
 
     # Cálculo de composición porcentual de consumo SB
     sb_consume_curve = sb_consume_curve[:-4]
-    sb_porc = []
-    e_net_curve_SB = []
-    e_PV_curve_SB = []
-    e_EV_curve_SB = []
-    porcentaje_e_net_curve_SB = []
-    porcentaje_e_PV_curve_SB = []
-    porcentaje_e_EV_curve_SB = []
+    e_EV_curve = []
     Total = []
     Total_sin_EV = []
-    for a in range(len(sb_consume_curve)):
+    for a in range(len(E_tot_curve)):
 
+        if ev_consume_curve[a] < 0:
 
-        #porcentaje de SB respecto total
-        sb_porc.append(min([sb_consume_curve[a] / E_tot_curve[a], 1])) # cuando E_tot_curve < sb_consume_curve es porque los vehículos están entregando energía
-        # cantidad de energía red va al SB respecto total
-        e_net_curve_SB.append(min([E_net_curve[a] * sb_porc[a], sb_consume_curve[a]])) # no puede superar el sb_consume_curve
-        # cantidad de energía PV va al SB respecto total
-        e_PV_curve_SB.append(min([E_PV_curve[a] * sb_porc[a], sb_consume_curve[a]])) # no puede superar el sb_consume_curve
-        # cantidad de energía EV va al SB respecto total
-
-        np.array(e_EV_curve_SB.append(max([0, sb_consume_curve[a]-e_net_curve_SB[a]-e_PV_curve_SB[a]])))
-        # porcentajes de energía de SB
-        porcentaje_e_net_curve_SB.append(e_net_curve_SB[a] / sb_consume_curve[a])
-        porcentaje_e_PV_curve_SB.append(e_PV_curve_SB[a] / sb_consume_curve[a])
-        porcentaje_e_EV_curve_SB.append(e_EV_curve_SB[a] / sb_consume_curve[a])
-
-        Total.append(porcentaje_e_net_curve_SB[a] + porcentaje_e_PV_curve_SB[a] + porcentaje_e_EV_curve_SB[a])
-        Total_sin_EV.append(porcentaje_e_net_curve_SB[a] + porcentaje_e_PV_curve_SB[a])
-
-    #print(f"sb_consume_curve: {sb_consume_curve}")
-    #print(f"e_net_curve_SB: {porcentaje_e_net_curve_SB}")
-    #print(f"e_PV_curve_SB: {porcentaje_e_PV_curve_SB}")
-    #print(f"e_EV_curve_SB: {porcentaje_e_EV_curve_SB}")
+            e_EV_curve.append(-ev_consume_curve[a])
+        else:
+            e_EV_curve.append(0)
+        print(e_EV_curve[a])
+        # PARA GRÁFICOS ---- Totales de cantidad
+        Total.append(E_net_curve[a] + E_PV_curve[a] + e_EV_curve[a])
+        Total_sin_EV.append(E_net_curve[a] + E_PV_curve[a])
 
     index = np.arange(len(sb_consume_curve))
     fig, ax = plt.subplots()
-    ax.bar(index, Total, label = 'Porcentaje EV')
-    ax.bar(index, Total_sin_EV, label = 'Porcentaje red')
-    ax.bar(index, porcentaje_e_PV_curve_SB, label = 'Porcentaje PV')
+    ax.bar(index, Total, color='tab:cyan', label = 'Energía útil EV')
+    ax.bar(index, Total_sin_EV, color='tab:blue', label = 'Energía útil red')
+    ax.bar(index, E_PV_curve, color='tab:green', label = 'Energía útil PV')
 
+    #ax.plot(E_PV_curve, color='tab:green', label='PV energy')
+    ax.plot(price_curve, color='tab:red', label='Price')
+    ax.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
 
-    ax.plot(E_PV_curve/np.amax(E_PV_curve), color='tab:green', label='PV energy')
-    ax.plot(price_curve/np.amax(price_curve), color='tab:red', label='Price')
-    ax.plot(sb_consume_curve/np.amax(sb_consume_curve), color='tab:orange', label='SB Demand')
-    #ax.plot(E_tot_curve/np.amax(E_tot_curve), color='tab:grey', label='Total Consume')
-    #ax.plot(ev_consume_curve/np.amax(ev_consume_curve), color='tab:cyan', label='EV Consume')
+    #ax.plot(E_PV_curve/np.amax(E_PV_curve), color='tab:green', label='PV energy')
+    #ax.plot(price_curve/np.amax(price_curve), color='tab:red', label='Price')
+    #ax.plot(sb_consume_curve/np.amax(sb_consume_curve), color='tab:orange', label='SB Demand')
+    ax.plot(E_tot_curve, color='tab:grey', label='Total Consume')
+    #ax.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
     #ax.plot(E_net_curve/np.amax(E_net_curve), color='tab:blue', label='Power grid energy')
 
     ax.legend(loc="upper left", framealpha=0.7, facecolor='white')
-
-
-
-
-
-
-
 
     plt.savefig(f'curves/Comsume_perce_{actual_date}_{algoritmo}.png', dpi=600)
     plt.show()
