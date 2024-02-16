@@ -22,7 +22,7 @@ def InitialValues_per_day(self):
 
             if present == 0:
                 arrival = round(random.rand()-0.1)
-                if arrival == 1 and hour <= 20:     # El auto puede llegar hasta las 20 hs
+                if arrival == 1 and hour <= 18:     # El auto puede llegar hasta las 20 hs
                     ran = random.randint(20, 80)    # Tiene una carga de entre 20% y 50% ---> Cambiado de 20% y 80%
                     BOC[car, hour] = ran / 100
                     pointer = pointer+1

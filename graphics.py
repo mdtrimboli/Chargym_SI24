@@ -12,7 +12,7 @@ actual_date = datetime.now().date()
 Train = False
 algoritmo = 'ppo'
 fecha_ddpg = '2024-01-31'
-fecha_ppo = '2024-02-14'
+fecha_ppo = '2024-02-15'
 
 if Train:
     ### COMPARACION DE REWARD
