@@ -68,28 +68,41 @@ else:
         Costo_total = np.sum(price_curve * E_net_curve)
         print(f"Costo total de {algoritmo}: {Costo_total}")
 
+    Costo_por_hora = []
+    for a in range(len(E_tot_curve)):
+        Costo_por_hora.append(E_net_curve[a] * price_curve[a])
+
     fig, ax1 = plt.subplots()
 
     ax1.set_xlabel('Time [h]')
-    ax1.set_ylabel('Energy [KWh]')
-    ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
-    ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
+    ax1.set_ylabel('Energy cost[$]')
+    #ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
+    #ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
     #ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
-    ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
-    ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
+    #ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
+    #ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
+    ax1.plot(Costo_por_hora, color='black', label='Energy cost')
+    #ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
     ax1.tick_params(axis='y')
     ax1.legend(loc="upper left", framealpha=0.7, facecolor='white')
-    ax1.set_ylim(top=120)
+    #ax1.set_ylim(top=120)
     ax1.set_xlim([0,23])
     ax1.set_xticks(np.arange(0, 23, step=4))
 
     ax2 = ax1.twinx()
-    ax2.set_ylabel('Cost [$]')
+    ax2.set_ylabel('Price [$/kWh]')
     ax2.plot(price_curve, color='tab:red', label='Price')
+
     ax2.tick_params(axis='y')
     ax2.legend(loc="upper right", framealpha=0.7, facecolor='white')
-    ax2.set_ylim(top=0.12)
+    #ax2.set_ylim(top=0.12)
+    ax2.grid(axis='y', visible=False)
 
+
+    #ax3 = ax1.twinx()
+    #ax3.spines.right.set_position(("axes", 1.08))
+    #ax3.plot(Costo_por_hora, color='black', label='Energy cost')
+    #ax3.legend(loc="lower left", framealpha=0.7, facecolor='white')
 
 
     plt.savefig(f'curves/Energy_comp_{actual_date}_{algoritmo}.png', dpi=600)

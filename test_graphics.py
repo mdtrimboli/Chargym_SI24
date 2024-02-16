@@ -69,41 +69,61 @@ else:
         print(f"Costo total de {algoritmo}: {Costo_total}")
 
 
-    # Cálculo de composición porcentual de consumo SB
+    # Cálculo y gráfico de composición de consumo total
     sb_consume_curve = sb_consume_curve[:-4]
     e_EV_curve = []
     Total = []
     Total_sin_EV = []
     for a in range(len(E_tot_curve)):
 
-        if ev_consume_curve[a] < 0:
-
+        if ev_consume_curve[a] < 0:     # si sobra energía a las baterías, se guarda en vector
             e_EV_curve.append(-ev_consume_curve[a])
         else:
             e_EV_curve.append(0)
-        print(e_EV_curve[a])
         # PARA GRÁFICOS ---- Totales de cantidad
         Total.append(E_net_curve[a] + E_PV_curve[a] + e_EV_curve[a])
         Total_sin_EV.append(E_net_curve[a] + E_PV_curve[a])
 
+
+    def add_value_label(x_list, y_list, y_list_ant, color):
+        y_list_ant = np.array(y_list_ant).astype(int)
+        myArray = np.array(y_list).astype(int)
+        for i in range(0, len(x_list)):
+            # para evitar escribir dos veces el mismo número en el mismo lugar
+            if myArray[i] != y_list_ant[i]:
+                plt.text(i, myArray[i], myArray[i], ha = "center", fontsize = 8, color = 'black')
+
     index = np.arange(len(sb_consume_curve))
     fig, ax = plt.subplots()
-    ax.bar(index, Total, color='tab:cyan', label = 'Energía útil EV')
-    ax.bar(index, Total_sin_EV, color='tab:blue', label = 'Energía útil red')
-    ax.bar(index, E_PV_curve, color='tab:green', label = 'Energía útil PV')
-
-    #ax.plot(E_PV_curve, color='tab:green', label='PV energy')
-    ax.plot(price_curve, color='tab:red', label='Price')
+    ax.bar(index, Total, color='tab:cyan', label = 'Useful EV energy')
+    add_value_label(index, E_PV_curve, np.zeros(len(E_PV_curve)), 'tab:cyan')
+    ax.bar(index, Total_sin_EV, color='tab:blue', label = 'Useful grid energy')
+    add_value_label(index, np.array(Total_sin_EV), E_PV_curve, 'tab:blue')
+    ax.bar(index, E_PV_curve, color='tab:green', label = 'Useful PV energy')
+    add_value_label(index, np.array(Total), np.array(Total_sin_EV), 'tab:green')
     ax.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
-
-    #ax.plot(E_PV_curve/np.amax(E_PV_curve), color='tab:green', label='PV energy')
-    #ax.plot(price_curve/np.amax(price_curve), color='tab:red', label='Price')
-    #ax.plot(sb_consume_curve/np.amax(sb_consume_curve), color='tab:orange', label='SB Demand')
+    #ax.plot(E_PV_curve, color='tab:green', label='PV energy')
+    #ax.plot(price_curve, color='tab:red', label='Price')
+    #ax.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
     ax.plot(E_tot_curve, color='tab:grey', label='Total Consume')
     #ax.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
-    #ax.plot(E_net_curve/np.amax(E_net_curve), color='tab:blue', label='Power grid energy')
+    #ax.plot(E_net_curve, color='tab:blue', label='Power grid energy')
 
+    ax.tick_params(axis='y')
     ax.legend(loc="upper left", framealpha=0.7, facecolor='white')
+    ax.set_xlabel('Time [h]')
+    ax.set_ylabel('Energy [KWh]')
+    ax.set_xticks(np.arange(0, 23, step=4))
+
+
+    ax1 = ax.twinx()
+    ax1.set_ylabel('Cost [$]')
+    ax1.plot(price_curve, color='tab:red', label='Price', linewidth=0.9)
+    ax1.tick_params(axis='y')
+    ax1.legend(loc="upper right", framealpha=0.7, facecolor='white')
+    ax1.set_ylim(top=0.12)
+    ax1.grid(False)
+
 
     plt.savefig(f'curves/Comsume_perce_{actual_date}_{algoritmo}.png', dpi=600)
     plt.show()
