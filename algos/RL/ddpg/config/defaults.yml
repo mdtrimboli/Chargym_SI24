@@ -71,9 +71,9 @@ arguments:
       help: "Training parameters."
       properties:
         - name: "epochs"
-          default: 10000  #800
+          default: 15000  #800
         - name: "steps_per_epoch"
-          default: 128 #1200
+          default: 24 #1200
         - name: "evaluation_steps"
           default: 24
         - name: "batch_size"
