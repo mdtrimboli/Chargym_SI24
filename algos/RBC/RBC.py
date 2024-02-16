@@ -1,3 +1,6 @@
+import argparse
+
+import gym
 import numpy as np
 
 
@@ -27,5 +30,38 @@ class RBC:
                 action[car]=(states[0] + states[2]) / 2   # si el Tleave es > 3 va a cargar dependiendo del promedio de los
                                                           # de la radiación actual y la de la próxima hora
 
-
         return action
+
+
+    def main(self, env):
+
+        i = 0
+        len_test = 1
+
+        rewards_list = []
+        for j in range(len_test):
+            state = env.reset()
+            done = False
+            while not done:
+                i += 1
+                action = RBC.select_action(env.env, state)
+                next_state, rewards, done, info = env.step(action)
+                # print(rewards)
+                state = next_state
+                rewards_list.append(rewards)
+
+            if done:
+                SOC = info['SOC']
+                Presence = info['Presence']
+                # Gráfico b) Evolución Almacenamiento Energía
+                np.savetxt("curves/E_almacenada_red_rbc.csv", env.Grid_Evol_mem, delimiter=", ", fmt='% s')
+                np.savetxt("curves/E_almacenada_PV_rbc.csv", env.Energy['Renewable'][0][:24], delimiter=", ", fmt='% s')
+                # gráfico c) Perfil de carga
+                np.savetxt("curves/Presencia_autos_rbc.csv", Presence, delimiter=", ", fmt='% s')
+                np.savetxt("curves/SOC_rbc.csv", SOC, delimiter=", ", fmt='% s')
+                np.savetxt("curves/E_almacenada_total_rbc.csv", env.Lista_E_Almac_Total, delimiter=", ", fmt='% s')
+
+        final_reward = sum(rewards_list)
+        avg_reward = final_reward / len_test
+        print(avg_reward)
+

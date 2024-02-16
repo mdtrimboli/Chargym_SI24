@@ -3,6 +3,7 @@ import argparse
 import gym
 from stable_baselines3.common.env_checker import check_env
 
+from algos.RBC.RBC import RBC
 from algos.RL.ddpg.ddpg import DDPG_Agent
 from algos.RL.ppo.ppo import PPO_Agent
 from algos.RL.ddpg.config.config import Config
@@ -15,43 +16,49 @@ def main(args):
 
     config = Config.get().main.trainer
 
-
     algo = "DDPG"
     mode = "Train"
 
-    #env = gym.make('ChargingEnv-v0')
+    # env = gym.make('ChargingEnv-v0')
+    # check_env(env)
 
-    #check_env(env)
+    if algo != "RBC":
+        if mode == "Train":
+            env = ChargingEnv()
+            if algo == "DDPG":
+                agent = DDPG_Agent(mode, env, load_date)
+                agent.train()
+                agent.save_models()
+            elif algo == "PPO":
+                # Maximum number of steps per episode
+                args.state_dim = env.observation_space.shape[0]
+                args.action_dim = env.action_space.shape[0]
+                args.max_action = float(env.action_space.high[0])
+                args.max_episode_steps = 200
+                agent = PPO_Agent(env, load_date, args)
+                agent.train()
+                agent.save_models(agent._ppo.actor, agent._ppo.critic, 'model')
+            else:
+                print("Ingrese un algoritmo existente en el proyecto")
 
-    if mode == "Train":
-        env = ChargingEnv()
-        if (algo == "DDPG"):
-            agent = DDPG_Agent(mode, env, load_date)
-        else:
-            # Maximum number of steps per episode
-            args.state_dim = env.observation_space.shape[0]
-            args.action_dim = env.action_space.shape[0]
-            args.max_action = float(env.action_space.high[0])
-            args.max_episode_steps = 200
-            agent = PPO_Agent(env, load_date, args)
 
-        agent.train()
-        agent.save_models(agent._ppo.actor, agent._ppo.critic, 'model')
-    elif mode == "Eval":
+
+        elif mode == "Eval":
+            env = ChargingEnv(reset_flag=1)
+            if algo == "DDPG":
+                agent = DDPG_Agent(mode, env, load_date)
+            else:
+                args.state_dim = env.observation_space.shape[0]
+                args.action_dim = env.action_space.shape[0]
+                args.max_action = float(env.action_space.high[0])
+                args.max_episode_steps = 200
+                agent = PPO_Agent(env, load_date, args)
+            agent.load_models(agent._ppo.actor, agent._ppo.critic, 'model')
+            agent.evaluate()
+    else:
         env = ChargingEnv(reset_flag=1)
-        if (algo == "DDPG"):
-            agent = DDPG_Agent(mode, env, load_date)
-        else:
-            args.state_dim = env.observation_space.shape[0]
-            args.action_dim = env.action_space.shape[0]
-            args.max_action = float(env.action_space.high[0])
-            args.max_episode_steps = 200
-            agent = PPO_Agent(env, load_date, args)
-        agent.load_models(agent._ppo.actor, agent._ppo.critic, 'model')
-        agent.evaluate()
-
-
-
+        rbc_agent = RBC()
+        rbc_agent.main(env)
 
 
 # Press the green button in the gutter to run the script.
@@ -88,5 +95,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main(args)
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/

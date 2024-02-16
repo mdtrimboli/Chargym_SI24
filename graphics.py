@@ -12,7 +12,7 @@ actual_date = datetime.now().date()
 Train = False
 algoritmo = 'ppo'
 fecha_ddpg = '2024-01-31'
-fecha_ppo = '2024-02-14'
+fecha_ppo = '2024-02-15'
 
 if Train:
     ### COMPARACION DE REWARD
@@ -72,9 +72,9 @@ else:
 
     ax1.set_xlabel('Time [h]')
     ax1.set_ylabel('Energy [KWh]')
-    #ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
-    #ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
-    #ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
+    ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
+    ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
+    ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
     ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
     ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
     ax1.tick_params(axis='y')
