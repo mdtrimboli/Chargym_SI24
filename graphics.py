@@ -72,8 +72,8 @@ else:
 
     ax1.set_xlabel('Time [h]')
     ax1.set_ylabel('Energy [KWh]')
-    #ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
-    #ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
+    ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
+    ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
     #ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
     ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
     ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
