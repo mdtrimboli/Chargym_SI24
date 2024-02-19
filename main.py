@@ -12,11 +12,11 @@ from env.Charging_Station_Enviroment import ChargingEnv
 
 def main(args):
 
-    load_date = '2024-02-15'  # Formato: '2023-11-22'
+    load_date = '2024-02-19'  # Formato: '2023-11-22'
 
     config = Config.get().main.trainer
 
-    algo = "DDPG"
+    algo = "RBC"
     mode = "Train"
 
     # env = gym.make('ChargingEnv-v0')
@@ -57,7 +57,7 @@ def main(args):
             agent.evaluate()
     else:
         env = ChargingEnv(reset_flag=1)
-        rbc_agent = RBC()
+        rbc_agent = RBC(env)
         rbc_agent.main(env)
 
 

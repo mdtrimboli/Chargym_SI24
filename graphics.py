@@ -123,7 +123,7 @@ else:
     fig, axs = plt.subplots(2, 5, figsize=(12, 6))
     k = 0
     # Rellenar cada subgráfico con los datos
-    for i in range(2):
+    for i in range(2): 
         for j in range(5):
             k += 1
             #axs[i, j].plot(departure_curve[k-1, :], label='departure', color='red')
