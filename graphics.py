@@ -9,16 +9,16 @@ sns.set_theme()
 
 actual_date = datetime.now().date()
 
-Train = False
+Train = True
 algoritmo = 'ppo'
-fecha_ddpg = '2024-01-31'
+fecha_ddpg = '2024-02-19'
 fecha_ppo = '2024-02-15'
 
 if Train:
     ### COMPARACION DE REWARD
 
-    rew_curves_DDPG = open(f'Solvers/RL/curves/Rew_DDPG_{fecha_ddpg}.csv', 'rb')
-    rew_curves_PPO = open(f'Solvers/RL/curves/Rew_PPO_{fecha_ppo}.csv', 'rb')
+    rew_curves_DDPG = open(f'curves/Rew_DDPG_{fecha_ddpg}.csv', 'rb')
+    rew_curves_PPO = open(f'curves/Rew_PPO_{fecha_ppo}.csv', 'rb')
     data_DDPG = gaussian_filter1d(loadtxt(rew_curves_DDPG, delimiter=","), sigma=5)
     data_PPO = gaussian_filter1d(loadtxt(rew_curves_PPO, delimiter=","), sigma=5)
 
@@ -28,7 +28,7 @@ if Train:
     plt.legend(loc="lower right")
     plt.xlabel("Training Episodes")
     plt.ylabel("Episodic reward")
-    plt.savefig(f'Solvers/RL/curves/Reward_comp_{actual_date}.png', dpi=600)
+    plt.savefig(f'curves/Reward_comp_{actual_date}.png', dpi=600)
     plt.show()
 else:
 
