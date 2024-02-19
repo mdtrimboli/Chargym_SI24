@@ -5,7 +5,8 @@ import numpy as np
 
 
 class RBC:
-
+    def __init__(self, env):
+        self._env = env
     def select_action(self, states):
         action=[0,0,0,0,0,0,0,0,0,0]
         for car in range(self.number_of_cars):
@@ -44,7 +45,7 @@ class RBC:
             done = False
             while not done:
                 i += 1
-                action = RBC.select_action(env.env, state)
+                action = RBC.select_action(env, state)
                 next_state, rewards, done, info = env.step(action)
                 # print(rewards)
                 state = next_state
@@ -54,12 +55,12 @@ class RBC:
                 SOC = info['SOC']
                 Presence = info['Presence']
                 # Gráfico b) Evolución Almacenamiento Energía
-                np.savetxt("curves/E_almacenada_red_rbc.csv", env.Grid_Evol_mem, delimiter=", ", fmt='% s')
-                np.savetxt("curves/E_almacenada_PV_rbc.csv", env.Energy['Renewable'][0][:24], delimiter=", ", fmt='% s')
+                np.savetxt("curves/E_almacenada_red_rbc.csv", self._env.grid_hist, delimiter=", ", fmt='% s')
+                np.savetxt("curves/E_almacenada_PV_rbc.csv", self._env.Energy['Renewable'][0][:24], delimiter=", ", fmt='% s')
                 # gráfico c) Perfil de carga
                 np.savetxt("curves/Presencia_autos_rbc.csv", Presence, delimiter=", ", fmt='% s')
                 np.savetxt("curves/SOC_rbc.csv", SOC, delimiter=", ", fmt='% s')
-                np.savetxt("curves/E_almacenada_total_rbc.csv", env.Lista_E_Almac_Total, delimiter=", ", fmt='% s')
+                np.savetxt("curves/E_almacenada_total_rbc.csv", self._env.hist_tse, delimiter=", ", fmt='% s')
 
         final_reward = sum(rewards_list)
         avg_reward = final_reward / len_test

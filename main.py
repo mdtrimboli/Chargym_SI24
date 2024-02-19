@@ -16,7 +16,7 @@ def main(args):
 
     config = Config.get().main.trainer
 
-    algo = "DDPG"
+    algo = "RBC"
     mode = "Train"
 
     # env = gym.make('ChargingEnv-v0')
@@ -57,7 +57,7 @@ def main(args):
             agent.evaluate()
     else:
         env = ChargingEnv(reset_flag=1)
-        rbc_agent = RBC()
+        rbc_agent = RBC(env)
         rbc_agent.main(env)
 
 
