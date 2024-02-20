@@ -232,6 +232,7 @@ class DDPG_Agent:
                    delimiter=", ", fmt='% s')
         np.savetxt("curves/E_almacenada_red_ddpg.csv", self._env.grid_hist, delimiter=", ", fmt='% s')
         np.savetxt("curves/E_almacenada_PV_ddpg.csv", self._env.pv_res_hist, delimiter=", ", fmt='% s')
+        np.savetxt("curves/EV_consume_ddpg.csv", self._env.hist_ese, delimiter=", ", fmt='% s')
         # gráfico c) Perfil de carga
         # np.savetxt("curves/Presencia_autos.csv", env.Invalues['present_cars'], delimiter=", ", fmt='% s')
         np.savetxt("curves/Presencia_autos_ddpg.csv", self.Presence, delimiter=", ", fmt='% s')

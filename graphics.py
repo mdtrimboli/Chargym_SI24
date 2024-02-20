@@ -46,7 +46,7 @@ else:
         ### GRAFICA DE GENERACION DDPG Y PPO
         price_curve = loadtxt(open('curves/Precio.csv', 'rb'), delimiter=",")
         sb_consume_curve = loadtxt(open('curves/sb_energy.csv', 'rb'), delimiter=",")
-        ev_consume_curve = loadtxt(open('curves/EV_consume.csv', 'rb'), delimiter=",")
+        ev_consume_curve = loadtxt(open(f'curves/EV_consume_{algoritmo}.csv', 'rb'), delimiter=",")
         E_net_curve = loadtxt(open(f'curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
         E_PV_curve = loadtxt(open(f'curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
         E_tot_curve = loadtxt(open(f'curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
