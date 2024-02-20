@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 import torch
+import time
 
 from algos.RL.ppo.core.normalization import Normalization, RewardScaling
 from algos.RL.ppo.core.ppo_continuous import PPO_continuous
@@ -36,7 +37,7 @@ class PPO_Agent:
 
     ############################################
 
-    def save_models(self, actor, critic, directory, actor_filename='ppo_actor.pth', critic_filename='ppo_critic.pth'):
+    def save_models(self, actor, critic, directory):
         """
         Guarda los modelos del actor y del crítico en el directorio especificado.
 
@@ -47,6 +48,9 @@ class PPO_Agent:
         - actor_filename: Nombre del archivo para el modelo del actor.
         - critic_filename: Nombre del archivo para el modelo del crítico.
         """
+        actor_filename = f'ppo_actor_{self._date}.pth'
+        critic_filename = f'ppo_critic_{self._date}.pth'
+
         if not os.path.exists(directory):
             os.makedirs(directory)
 

@@ -16,7 +16,7 @@ def main(args):
 
     config = Config.get().main.trainer
 
-    algo = "RBC"
+    algo = "DDPG"
     mode = "Train"
 
     # env = gym.make('ChargingEnv-v0')
@@ -47,13 +47,15 @@ def main(args):
             env = ChargingEnv(reset_flag=1)
             if algo == "DDPG":
                 agent = DDPG_Agent(mode, env, load_date)
+                agent.load_models()
             else:
                 args.state_dim = env.observation_space.shape[0]
                 args.action_dim = env.action_space.shape[0]
                 args.max_action = float(env.action_space.high[0])
                 args.max_episode_steps = 200
                 agent = PPO_Agent(env, load_date, args)
-            agent.load_models(agent._ppo.actor, agent._ppo.critic, 'model')
+                agent.load_models(agent._ppo.actor, agent._ppo.critic, 'model')
+
             agent.evaluate()
     else:
         env = ChargingEnv(reset_flag=1)
