@@ -9,8 +9,8 @@ sns.set_theme()
 
 actual_date = datetime.now().date()
 
-Train = True
-algoritmo = 'ppo'
+Train = False
+algoritmo = 'rbc'
 fecha_ddpg = '2024-02-19'
 fecha_ppo = '2024-02-15'
 
@@ -35,11 +35,12 @@ else:
     ### GRAFICA DE GENERACION RBC
     if algoritmo == 'rbc':
 
-        price_curve = loadtxt(open('Solvers/RL/curves/Precio.csv', 'rb'), delimiter=",")
-
-        E_net_curve = loadtxt(open(f'algos/RBC/curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
-        E_PV_curve = loadtxt(open(f'algos/RBC/curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
-        E_tot_curve = loadtxt(open(f'algos/RBC/curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
+        price_curve = loadtxt(open('curves/Precio.csv', 'rb'), delimiter=",")
+        sb_consume_curve = loadtxt(open('curves/sb_energy.csv', 'rb'), delimiter=",")
+        ev_consume_curve = loadtxt(open('curves/EV_consume.csv', 'rb'), delimiter=",")
+        E_net_curve = loadtxt(open(f'curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
+        E_PV_curve = loadtxt(open(f'curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
+        E_tot_curve = loadtxt(open(f'curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
 
     else:
         ### GRAFICA DE GENERACION DDPG Y PPO
@@ -76,13 +77,12 @@ else:
 
     ax1.set_xlabel('Time [h]')
     ax1.set_ylabel('Energy cost[$]')
-    #ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
+    ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
     #ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
-    #ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
-    #ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
+    ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
     #ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
     ax1.plot(Costo_por_hora, color='black', label='Energy cost')
-    #ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
+    ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
     ax1.tick_params(axis='y')
     ax1.legend(loc="upper left", framealpha=0.7, facecolor='white')
     #ax1.set_ylim(top=120)
