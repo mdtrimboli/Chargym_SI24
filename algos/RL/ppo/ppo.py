@@ -144,7 +144,7 @@ class PPO_Agent:
                 np.savetxt("curves/E_almacenada_red_ppo.csv", self._env.grid_hist, delimiter=", ", fmt='% s')
                 np.savetxt("curves/E_almacenada_PV_ppo.csv", self._env.Energy['Renewable'][0][:24], delimiter=", ",
                            fmt='% s')
-                np.savetxt("curves/EV_consume.csv", self._env.hist_ese, delimiter=", ", fmt='% s')
+                np.savetxt("curves/EV_consume_ppo.csv", self._env.hist_ese, delimiter=", ", fmt='% s')
                 np.savetxt("curves/sb_energy.csv", self._env.consume_profile_sb, delimiter=", ", fmt='% s')
                 np.savetxt("curves/Presencia_autos_ppo.csv", Presence, delimiter=", ", fmt='% s')
                 np.savetxt("curves/SOC_ppo.csv", SOC, delimiter=", ", fmt='% s')

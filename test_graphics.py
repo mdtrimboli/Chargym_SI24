@@ -37,7 +37,7 @@ else:
 
         price_curve = loadtxt(open('curves/Precio.csv', 'rb'), delimiter=",")
         sb_consume_curve = loadtxt(open('curves/sb_energy.csv', 'rb'), delimiter=",")
-        ev_consume_curve = loadtxt(open('curves/EV_consume.csv', 'rb'), delimiter=",")
+        ev_consume_curve = loadtxt(open(f'curves/EV_consume_{algoritmo}.csv', 'rb'), delimiter=",")
         E_net_curve = loadtxt(open(f'curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
         E_PV_curve = loadtxt(open(f'curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
         E_tot_curve = loadtxt(open(f'curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
@@ -52,16 +52,17 @@ else:
         E_tot_curve = loadtxt(open(f'curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
 
         if algoritmo == 'ddpg':
-            E_tot_curve = [0, *E_tot_curve]
-            E_PV_curve = [0, *E_PV_curve]
-            E_net_curve = E_net_curve[10:]
+            z = 1
+            #E_tot_curve = [0, *E_tot_curve]
+            #E_PV_curve = [0, *E_PV_curve]
+            #E_net_curve = E_net_curve[10:]
 
     # CÁLCULO DE ENERGÍA COMPRADA Y SU COSTO
     if algoritmo == "ddpg":
 
         En_total = np.sum(E_net_curve[:-1])
         print(f"Energía total de {algoritmo}: {En_total}")
-        Costo_total = np.sum(price_curve*E_net_curve[:-1])
+        Costo_total = np.sum(price_curve*E_net_curve)
         print(f"Costo total de {algoritmo}: {Costo_total}")
     else:
         En_total = np.sum(E_net_curve)
@@ -106,7 +107,7 @@ else:
     #ax.plot(E_PV_curve, color='tab:green', label='PV energy')
     #ax.plot(price_curve, color='tab:red', label='Price')
     #ax.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
-    #ax.plot(E_tot_curve, color='tab:grey', label='Total Consume')
+    ax.plot(E_tot_curve, color='tab:grey', label='Total Consume')
     #ax.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
     #ax.plot(E_net_curve, color='tab:blue', label='Power grid energy')
 
@@ -125,6 +126,7 @@ else:
     ax1.set_ylim(top=0.12)
     ax1.grid(False)
 
+    plt.title(algoritmo)
 
     plt.savefig(f'curves/Comsume_perce_{actual_date}_{algoritmo}.png', dpi=600)
     plt.show()

@@ -28,8 +28,9 @@ class RBC:
                 #action[car]=states[0]
 
                 #scenario 2, mean value of current radiation and one hour ahead
-                action[car]=(states[0] + states[2]) / 2   # si el Tleave es > 3 va a cargar dependiendo del promedio de los
+                action[car]=(states[0] + states[3]) / 2   # si el Tleave es > 3 va a cargar dependiendo del promedio de los
                                                           # de la radiación actual y la de la próxima hora
+                # states[0] + states[2] no son la irradiancia 0 y 1!!!
 
         return action
 
@@ -57,10 +58,12 @@ class RBC:
                 # Gráfico b) Evolución Almacenamiento Energía
                 np.savetxt("curves/E_almacenada_red_rbc.csv", self._env.grid_hist, delimiter=", ", fmt='% s')
                 np.savetxt("curves/E_almacenada_PV_rbc.csv", self._env.Energy['Renewable'][0][:24], delimiter=", ", fmt='% s')
+                np.savetxt("curves/EV_consume_rbc.csv", self._env.hist_ese, delimiter=", ", fmt='% s')
+                np.savetxt("curves/E_almacenada_total_rbc.csv", self._env.hist_tse, delimiter=", ", fmt='% s')
                 # gráfico c) Perfil de carga
                 np.savetxt("curves/Presencia_autos_rbc.csv", Presence, delimiter=", ", fmt='% s')
                 np.savetxt("curves/SOC_rbc.csv", SOC, delimiter=", ", fmt='% s')
-                np.savetxt("curves/E_almacenada_total_rbc.csv", self._env.hist_tse, delimiter=", ", fmt='% s')
+
 
         final_reward = sum(rewards_list)
         avg_reward = final_reward / len_test

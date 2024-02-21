@@ -77,8 +77,10 @@ class DDPG_Agent:
         torch.save(self._critic.state_dict(), f'model/ddpg_critic_{self._date}.pth')
 
     def load_models(self):
-        self._actor.load_state_dict(torch.load(f'model/ddpg_actor_{self._load_date}.pth'))
-        self._critic.load_state_dict(torch.load(f'model/ddpg_critic_{self._load_date}.pth'))
+        self._actor.load_state_dict(torch.load(f'model/ddpg_actor_{self._load_date}.pth',
+                                               map_location=torch.device('cpu')))
+        self._critic.load_state_dict(torch.load(f'model/ddpg_critic_{self._load_date}.pth',
+                                                map_location=torch.device('cpu')))
 
     def _as_tensor(self, ndarray, requires_grad=False):
         tensor = torch.Tensor(ndarray)
@@ -231,10 +233,14 @@ class DDPG_Agent:
                              0.06, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.07, 0.07, 0.07, 0.06, 0.06]),
                    delimiter=", ", fmt='% s')
         np.savetxt("curves/E_almacenada_red_ddpg.csv", self._env.grid_hist, delimiter=", ", fmt='% s')
-        np.savetxt("curves/E_almacenada_PV_ddpg.csv", self._env.pv_res_hist, delimiter=", ", fmt='% s')
+        #np.savetxt("curves/E_almacenada_PV_ddpg.csv", self._env.pv_res_hist, delimiter=", ", fmt='% s')
+        np.savetxt("curves/E_almacenada_PV_ddpg.csv", self._env.Energy['Renewable'][0][:24], delimiter=", ",
+                   fmt='% s')
+
         # gráfico c) Perfil de carga
         # np.savetxt("curves/Presencia_autos.csv", env.Invalues['present_cars'], delimiter=", ", fmt='% s')
         np.savetxt("curves/Presencia_autos_ddpg.csv", self.Presence, delimiter=", ", fmt='% s')
+        np.savetxt("curves/EV_consume_ddpg.csv", self._env.hist_ese, delimiter=", ", fmt='% s')
         # np.savetxt("curves/SOC.csv", env.SOC, delimiter=", ", fmt='% s')
         np.savetxt("curves/SOC_ddpg.csv", self.SOC, delimiter=", ", fmt='% s')
         np.savetxt("curves/E_almacenada_total_ddpg.csv", self._env.hist_tse, delimiter=", ", fmt='% s')
