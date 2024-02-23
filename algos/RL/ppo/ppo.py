@@ -154,9 +154,12 @@ class PPO_Agent:
                 np.savetxt("curves/SOC_ppo.csv", SOC, delimiter=", ", fmt='% s')
                 np.savetxt("curves/E_almacenada_total_ppo.csv", self._env.hist_tse, delimiter=", ", fmt='% s')
 
+                reward_eval = episode_reward
+
                 s = self._env.reset()
                 episode_reward = 0
                 episode_length = 0
+        return reward_eval
 
     def train(self):
         while self._total_steps < self._args.max_train_steps:

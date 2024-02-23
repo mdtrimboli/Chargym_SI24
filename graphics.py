@@ -9,10 +9,10 @@ sns.set_theme()
 
 actual_date = datetime.now().date()
 
-Train = True
-algoritmo = 'ddpg'
+Train = False
+algoritmo = 'DDPG'
 fecha_ddpg = '2024-02-20'
-fecha_ppo = '2024-02-19'
+fecha_ppo = '2024-02-08'
 
 if Train:
     ### COMPARACION DE REWARD
@@ -58,27 +58,42 @@ else:
             #E_net_curve = E_net_curve[10:]
 
     # CÁLCULO DE ENERGÍA COMPRADA Y SU COSTO
-    if algoritmo == "ddpg":
-        En_total = np.sum(E_net_curve[:-1])
-        print(f"Energía total de {algoritmo}: {En_total}")
-        Costo_total = np.sum(price_curve*E_net_curve)
-        print(f"Costo total de {algoritmo}: {Costo_total}")
-    else:
-        En_total = np.sum(E_net_curve)
-        print(f"Energía total de {algoritmo}: {En_total}")
-        Costo_total = np.sum(price_curve * E_net_curve)
-        print(f"Costo total de {algoritmo}: {Costo_total}")
+    En_total = np.sum(E_net_curve)
+    print(f"Energía total de {algoritmo}: {En_total}")
+    Costo_total = np.sum(price_curve * E_net_curve)
+    print(f"Costo total de {algoritmo}: {Costo_total}")
+    Costo_prom_compra = Costo_total / En_total
+    print(f"Costo promedio de compra de {algoritmo}: {Costo_prom_compra}")
 
     Costo_por_hora = []
     for a in range(len(E_tot_curve)-1):
         Costo_por_hora.append(E_net_curve[a] * price_curve[a])
 
-    fig, ax1 = plt.subplots()
 
-    ax1.set_xlabel('Time [h]')
-    ax1.set_ylabel('Energy cost[$]')
-    ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
-    ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
+    fig, ax1 = plt.subplots(figsize=(12, 6))
+
+#    ax1[0].plot(E_net_curve, color='tab:blue', label='Power grid energy')
+#    ax1[0].plot(E_PV_curve, color='tab:green', label='PV energy')
+#    ax1[0].plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
+#    ax2 = ax1[0].twinx()
+#    ax2.set_ylabel('Price [$/kWh]')
+#    ax2.plot(price_curve, color='tab:red', label='Price')
+#    ax1[0].set_xlabel('Time [h]')
+#    ax1[0].set_ylabel('Power grid energy [kWh]')
+#    ax1[0].legend(loc="upper left", framealpha=0.7, facecolor='white')
+#    ax2.legend(loc="upper right", framealpha=0.7, facecolor='white')
+
+#    ax1[1].plot(Costo_por_hora, color='black', label='Energy cost')
+#    ax2 = ax1[1].twinx()
+#    ax2.set_ylabel('Price [$/kWh]')
+#    ax2.plot(price_curve, color='tab:red', label='Price')
+#    ax1[1].set_xlabel('Time [h]')
+#    ax1[1].set_ylabel('Energy cost[$]')
+#    ax1[1].legend(loc="upper left", framealpha=0.7, facecolor='white')
+#    ax2.legend(loc="upper right", framealpha=0.7, facecolor='white')
+
+    #ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
+    #ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
     ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
     ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
     #ax1.plot(Costo_por_hora, color='black', label='Energy cost')
@@ -88,14 +103,16 @@ else:
     #ax1.set_ylim(top=120)
     ax1.set_xlim([0,23])
     ax1.set_xticks(np.arange(0, 23, step=4))
+    ax1.set_xlabel('Time [h]')
+    ax1.set_ylabel('Energy[kWh]')
+
 
     ax2 = ax1.twinx()
     ax2.set_ylabel('Price [$/kWh]')
     ax2.plot(price_curve, color='tab:red', label='Price')
-
     ax2.tick_params(axis='y')
     ax2.legend(loc="upper right", framealpha=0.7, facecolor='white')
-    #ax2.set_ylim(top=0.12)
+    ax2.set_ylim(top=0.12)
     ax2.grid(axis='y', visible=False)
 
 

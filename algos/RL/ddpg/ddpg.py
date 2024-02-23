@@ -236,7 +236,7 @@ class DDPG_Agent:
         #np.savetxt("curves/E_almacenada_PV_ddpg.csv", self._env.pv_res_hist, delimiter=", ", fmt='% s')
         np.savetxt("curves/E_almacenada_PV_ddpg.csv", self._env.Energy['Renewable'][0][:24], delimiter=", ",
                    fmt='% s')
-
+        np.savetxt("curves/EV_consume_ddpg.csv", self._env.hist_ese, delimiter=", ", fmt='% s')
         # gráfico c) Perfil de carga
         # np.savetxt("curves/Presencia_autos.csv", env.Invalues['present_cars'], delimiter=", ", fmt='% s')
         np.savetxt("curves/Presencia_autos_ddpg.csv", self.Presence, delimiter=", ", fmt='% s')
@@ -249,6 +249,8 @@ class DDPG_Agent:
               f"Average episode length: {mean_episode_length}\n"
               f"Average reward: {mean_episode_reward}\n"
               f"Average action magnitude: {np.mean(episode_actions)}")
+
+        return mean_episode_reward
 
     def train(self):
 

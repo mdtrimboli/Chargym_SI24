@@ -12,15 +12,21 @@ from env.Charging_Station_Enviroment import ChargingEnv
 
 def main(args):
 
-    load_date = '2024-02-19'  # Formato: '2023-11-22'
+    load_date = '2024-02-20'  # Formato: '2023-11-22'
 
     config = Config.get().main.trainer
 
     algo = "DDPG"
-    mode = "Train"
+    mode = "Eval"
+    episode_num = 1 # 1 para evaluar una vez con iguales condiciones
 
     # env = gym.make('ChargingEnv-v0')
     # check_env(env)
+    if episode_num == 1:
+        res_flag = 1
+    else:
+        res_flag = 0
+
 
     if algo != "RBC":
         if mode == "Train":
@@ -44,29 +50,39 @@ def main(args):
 
 
         elif mode == "Eval":
-            env = ChargingEnv(reset_flag=1)
-            if algo == "DDPG":
-                agent = DDPG_Agent(mode, env, load_date)
-                agent.load_models()
-            else:
-                args.state_dim = env.observation_space.shape[0]
-                args.action_dim = env.action_space.shape[0]
-                args.max_action = float(env.action_space.high[0])
-                args.max_episode_steps = 200
-                agent = PPO_Agent(env, load_date, args)
-                agent.load_models(agent._ppo.actor, agent._ppo.critic, 'model')
+            reward_agent = 0
+            for i in range(episode_num):
+                env = ChargingEnv(reset_flag=res_flag)
+                if algo == "DDPG":
+                    agent = DDPG_Agent(mode, env, load_date)
+                    agent.load_models()
+                else:
+                    args.state_dim = env.observation_space.shape[0]
+                    args.action_dim = env.action_space.shape[0]
+                    args.max_action = float(env.action_space.high[0])
+                    args.max_episode_steps = 200
+                    agent = PPO_Agent(env, load_date, args)
+                    agent.load_models(agent._ppo.actor, agent._ppo.critic, 'model')
 
-            agent.evaluate()
+                reward_agent += agent.evaluate()
+            reward_agent = reward_agent / episode_num
+            print(reward_agent)
+
+
     else:
-        env = ChargingEnv(reset_flag=1)     #0 para diferentes días
-        rbc_agent = RBC(env)
-        rbc_agent.main(env)
+        reward_rbc = 0
+        for i in range(episode_num):
+            env = ChargingEnv(reset_flag=res_flag)     #0 para diferentes días
+            rbc_agent = RBC(env)
+            reward_rbc += rbc_agent.main(env)
+        reward_rbc = reward_rbc / episode_num
+        print(reward_rbc)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Hyperparameters Setting for ppo-continuous")
-    parser.add_argument("--max_train_steps", type=int, default=int(400000), help=" Maximum number of training steps")
+    parser.add_argument("--max_train_steps", type=int, default=int(480000), help=" Maximum number of training steps")
     parser.add_argument("--evaluation_steps", type=float, default=24,
                         help="Steps for evaluation phase")
     parser.add_argument("--evaluate_freq", type=float, default=24,

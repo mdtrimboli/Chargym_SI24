@@ -77,11 +77,11 @@ arguments:
         - name: "evaluation_steps"
           default: 24
         - name: "batch_size"
-          default: 2048   #512
+          default: 64   #512
         - name: "max_episode_length"
-          default: 300
+          default: 25
         - name: "replay_buffer_size"
-          default: 100000000   #10000000
+          default: 500000   #10000000
         - name: "discount_factor"
           default: 0.95 #0.99
         - name: "polyak"
@@ -93,15 +93,15 @@ arguments:
         - name: "start_steps"
           default: 500  #500
         - name: "action_noise_range"
-          default: 0.1   #0.01
+          default: 0.05   #0.01
         - name: "use_gpu"
-          default: true
+          default: false
         - name: "reward_scale"
           default: 1
         - name: "max_updates_per_episode"
-          default: 10
+          default: 8
         - name: "min_buffer_fill"
-          default: 200  #def: 2000
+          default: 20000  #def: 200
   - name: "main"
     help: "Safe-Explorer driver properties."
     properties:

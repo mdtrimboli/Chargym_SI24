@@ -9,28 +9,13 @@ sns.set_theme()
 
 actual_date = datetime.now().date()
 
-Train = False
-algoritmo = 'rbc'
-fecha_ddpg = '2024-02-19'
+
+algoritmo = 'ddpg'
+fecha_ddpg = '2024-02-21'
 fecha_ppo = '2024-02-19'
 
-if Train:
-    ### COMPARACION DE REWARD
 
-    rew_curves_DDPG = open(f'Solvers/RL/curves/Rew_DDPG_{fecha_ddpg}.csv', 'rb')
-    rew_curves_PPO = open(f'Solvers/RL/curves/Rew_PPO_{fecha_ppo}.csv', 'rb')
-    data_DDPG = gaussian_filter1d(loadtxt(rew_curves_DDPG, delimiter=","), sigma=5)
-    data_PPO = gaussian_filter1d(loadtxt(rew_curves_PPO, delimiter=","), sigma=5)
-
-    plt.plot(data_DDPG, label='DDPG', color='tab:red')
-    plt.plot(data_PPO, label='PPO', color='tab:blue')
-
-    plt.legend(loc="lower right")
-    plt.xlabel("Training Episodes")
-    plt.ylabel("Episodic reward")
-    plt.savefig(f'Solvers/RL/curves/Reward_comp_{actual_date}.png', dpi=600)
-    plt.show()
-else:
+if True:
 
     ### GRAFICA DE GENERACION RBC
     if algoritmo == 'rbc':
@@ -46,7 +31,7 @@ else:
         ### GRAFICA DE GENERACION DDPG Y PPO
         price_curve = loadtxt(open('curves/Precio.csv', 'rb'), delimiter=",")
         sb_consume_curve = loadtxt(open('curves/sb_energy.csv', 'rb'), delimiter=",")
-        ev_consume_curve = loadtxt(open('curves/EV_consume.csv', 'rb'), delimiter=",")
+        ev_consume_curve = loadtxt(open(f'curves/EV_consume_{algoritmo}.csv', 'rb'), delimiter=",")
         E_net_curve = loadtxt(open(f'curves/E_almacenada_red_{algoritmo}.csv', 'rb'), delimiter=",")
         E_PV_curve = loadtxt(open(f'curves/E_almacenada_PV_{algoritmo}.csv', 'rb'), delimiter=",")
         E_tot_curve = loadtxt(open(f'curves/E_almacenada_total_{algoritmo}.csv', 'rb'), delimiter=",")
@@ -108,7 +93,7 @@ else:
     #ax.plot(price_curve, color='tab:red', label='Price')
     #ax.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
     ax.plot(E_tot_curve, color='tab:grey', label='Total Consume')
-    #ax.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
+    ax.plot(ev_consume_curve, color='tab:cyan', label='EVs energy flow')
     #ax.plot(E_net_curve, color='tab:blue', label='Power grid energy')
 
     ax.tick_params(axis='y')
@@ -116,6 +101,7 @@ else:
     ax.set_xlabel('Time [h]')
     ax.set_ylabel('Energy [KWh]')
     ax.set_xticks(np.arange(0, 23, step=4))
+    ax.set_ylim(top=130)
 
 
     ax1 = ax.twinx()

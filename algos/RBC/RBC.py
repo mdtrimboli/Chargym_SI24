@@ -68,4 +68,5 @@ class RBC:
         final_reward = sum(rewards_list)
         avg_reward = final_reward / len_test
         print(avg_reward)
+        return avg_reward
 
