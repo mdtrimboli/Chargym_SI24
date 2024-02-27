@@ -4,6 +4,7 @@ import numpy as np
 from numpy import loadtxt
 import seaborn as sns
 from scipy.ndimage.filters import gaussian_filter1d
+from matplotlib.ticker import (AutoMinorLocator, MultipleLocator)
 
 sns.set_theme()
 
@@ -70,7 +71,8 @@ else:
         Costo_por_hora.append(E_net_curve[a] * price_curve[a])
 
 
-    fig, ax1 = plt.subplots(figsize=(12, 6))
+    fig, ax1 = plt.subplots(figsize=(16, 8))
+
 
 #    ax1[0].plot(E_net_curve, color='tab:blue', label='Power grid energy')
 #    ax1[0].plot(E_PV_curve, color='tab:green', label='PV energy')
@@ -98,22 +100,33 @@ else:
     ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
     #ax1.plot(Costo_por_hora, color='black', label='Energy cost')
     ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
+
     ax1.tick_params(axis='y')
-    ax1.legend(loc="upper left", framealpha=0.7, facecolor='white')
+    ax1.legend(loc="upper left", framealpha=0.7, facecolor='white', fontsize="20")
     #ax1.set_ylim(top=120)
-    ax1.set_xlim([0,23])
+    ax1.set_xlim([0,24])
+    ax1.set_ylim(top=90)
     ax1.set_xticks(np.arange(0, 23, step=4))
-    ax1.set_xlabel('Time [h]')
-    ax1.set_ylabel('Energy[kWh]')
+    ax1.set_xlabel('Time [h]', fontsize = 'x-large')
+    ax1.set_ylabel('Energy[kWh]', fontsize = 'x-large')
+
+    ax1.xaxis.set_major_locator(MultipleLocator(4))
+    ax1.xaxis.set_minor_locator(AutoMinorLocator(4))
+    ax1.grid(which='minor', color='white', linestyle=':', linewidth = 2)
+
+    plt.tick_params(axis='both', which='major', labelsize=20)
 
 
     ax2 = ax1.twinx()
-    ax2.set_ylabel('Price [$/kWh]')
+    ax2.set_ylabel('Price [$/kWh]', fontsize = 'x-large')
     ax2.plot(price_curve, color='tab:red', label='Price')
     ax2.tick_params(axis='y')
-    ax2.legend(loc="upper right", framealpha=0.7, facecolor='white')
+    ax2.legend(loc="upper right", framealpha=0.7, facecolor='white', fontsize="20")
     ax2.set_ylim(top=0.12)
     ax2.grid(axis='y', visible=False)
+    plt.tick_params(axis='both', which='major', labelsize=20)
+
+
 
 
     #ax3 = ax1.twinx()
@@ -121,7 +134,7 @@ else:
     #ax3.plot(Costo_por_hora, color='black', label='Energy cost')
     #ax3.legend(loc="lower left", framealpha=0.7, facecolor='white')
 
-    plt.title(algoritmo)
+    #plt.title(algoritmo)
     plt.savefig(f'curves/Energy_comp_{actual_date}_{algoritmo}.png', dpi=600)
     plt.show()
 

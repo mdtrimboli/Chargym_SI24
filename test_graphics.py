@@ -10,7 +10,7 @@ sns.set_theme()
 actual_date = datetime.now().date()
 
 
-algoritmo = 'ddpg'
+algoritmo = 'ppo'
 fecha_ddpg = '2024-02-21'
 fecha_ppo = '2024-02-19'
 
