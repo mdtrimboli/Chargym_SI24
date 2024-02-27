@@ -11,7 +11,7 @@ sns.set_theme()
 actual_date = datetime.now().date()
 
 Train = False
-algoritmo = 'DDPG'
+algoritmo = 'RBC'
 fecha_ddpg = '2024-02-20'
 fecha_ppo = '2024-02-08'
 
@@ -96,7 +96,7 @@ else:
 
     #ax1.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
     #ax1.plot(E_tot_curve, color='tab:grey', label='Total Consume')
-    ax1.plot(ev_consume_curve, color='tab:cyan', label='EV Consume')
+    ax1.plot(ev_consume_curve, color='tab:cyan', label='EVs energy flow')
     ax1.plot(E_net_curve, color='tab:blue', label='Power grid energy')
     #ax1.plot(Costo_por_hora, color='black', label='Energy cost')
     ax1.plot(E_PV_curve, color='tab:green', label='PV energy')
@@ -110,6 +110,7 @@ else:
     ax1.set_xlabel('Time [h]', fontsize = 'x-large')
     ax1.set_ylabel('Energy[kWh]', fontsize = 'x-large')
 
+    ax1.grid(which='major', color='white', linewidth=2.2)
     ax1.xaxis.set_major_locator(MultipleLocator(4))
     ax1.xaxis.set_minor_locator(AutoMinorLocator(4))
     ax1.grid(which='minor', color='white', linestyle=':', linewidth = 2)
@@ -161,6 +162,11 @@ else:
             axs[i, j].plot(soc_curve[k-1, :], label='SoC', color='blue')
             axs[i, j].set_title(f'EV Spot {k}')
 
+
+            axs[i, j].xaxis.set_major_locator(MultipleLocator(10))
+            axs[i, j].xaxis.set_minor_locator(AutoMinorLocator(5))
+            axs[i, j].grid(which='minor', color='white', linestyle=':', linewidth=1)
+
     #lines_labels = [ax.get_legend_handles_labels() for ax in fig.axes]
     #lines, labels = [sum(lol, []) for lol in zip(*lines_labels)]
 
@@ -171,7 +177,8 @@ else:
     axs[1, 2].set_xlabel('Time [hour]')
     axs[1, 3].set_xlabel('Time [hour]')
     axs[1, 4].set_xlabel('Time [hour]')
-    plt.title(algoritmo)
+
+    #plt.title(algoritmo)
     # Ajustar el diseño para evitar superposiciones
 
     plt.tight_layout()

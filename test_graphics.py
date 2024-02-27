@@ -10,7 +10,7 @@ sns.set_theme()
 actual_date = datetime.now().date()
 
 
-algoritmo = 'ppo'
+algoritmo = 'ddpg'
 fecha_ddpg = '2024-02-21'
 fecha_ppo = '2024-02-19'
 
@@ -112,7 +112,7 @@ if True:
     ax1.set_ylim(top=0.12)
     ax1.grid(False)
 
-    plt.title(algoritmo)
+    #plt.title(algoritmo)
 
     plt.savefig(f'curves/Comsume_perce_{actual_date}_{algoritmo}.png', dpi=600)
     plt.show()
