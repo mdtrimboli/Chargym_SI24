@@ -10,8 +10,8 @@ sns.set_theme()
 
 actual_date = datetime.now().date()
 
-Train = False
-algoritmo = 'RBC'
+Train = True
+algoritmo = 'DDPG'
 fecha_ddpg = '2024-02-20'
 fecha_ppo = '2024-02-08'
 
@@ -23,12 +23,14 @@ if Train:
     data_DDPG = gaussian_filter1d(loadtxt(rew_curves_DDPG, delimiter=","), sigma=5)
     data_PPO = gaussian_filter1d(loadtxt(rew_curves_PPO, delimiter=","), sigma=5)
 
+    plt.figure(figsize=(16, 8))
     plt.plot(data_DDPG, label='DDPG', color='tab:red')
     plt.plot(data_PPO, label='PPO', color='tab:blue')
+    plt.tick_params(axis='both', which='major', labelsize=20)
 
-    plt.legend(loc="lower right")
-    plt.xlabel("Training Episodes")
-    plt.ylabel("Episodic reward")
+    plt.legend(loc="lower right", framealpha=0.7, facecolor='white', fontsize="20")
+    plt.xlabel("Training Episodes", fontsize = 'x-large')
+    plt.ylabel("Episodic reward", fontsize = 'x-large')
     plt.savefig(f'curves/Reward_comp_{actual_date}.png', dpi=600)
     plt.show()
 else:
@@ -108,7 +110,7 @@ else:
     ax1.set_ylim(top=90)
     ax1.set_xticks(np.arange(0, 23, step=4))
     ax1.set_xlabel('Time [h]', fontsize = 'x-large')
-    ax1.set_ylabel('Energy[kWh]', fontsize = 'x-large')
+    ax1.set_ylabel('Energy [kWh]', fontsize = 'x-large')
 
     ax1.grid(which='major', color='white', linewidth=2.2)
     ax1.xaxis.set_major_locator(MultipleLocator(4))
@@ -153,6 +155,7 @@ else:
     # Crear el subplot de 2 filas y 5 columnas
     fig, axs = plt.subplots(2, 5, figsize=(12, 6))
     k = 0
+
     # Rellenar cada subgráfico con los datos
     for i in range(2): 
         for j in range(5):
@@ -172,11 +175,11 @@ else:
 
     axs[0, 0].set_ylabel('SOC')
     axs[1, 0].set_ylabel('SOC')
-    axs[1, 0].set_xlabel('Time [hour]')
-    axs[1, 1].set_xlabel('Time [hour]')
-    axs[1, 2].set_xlabel('Time [hour]')
-    axs[1, 3].set_xlabel('Time [hour]')
-    axs[1, 4].set_xlabel('Time [hour]')
+    axs[1, 0].set_xlabel('Time [h]')
+    axs[1, 1].set_xlabel('Time [h]')
+    axs[1, 2].set_xlabel('Time [h]')
+    axs[1, 3].set_xlabel('Time [h]')
+    axs[1, 4].set_xlabel('Time [h]')
 
     #plt.title(algoritmo)
     # Ajustar el diseño para evitar superposiciones
@@ -185,6 +188,7 @@ else:
     plt.subplots_adjust(bottom=0.15, hspace=0.3)
     lines, labels = axs[0, 0].get_legend_handles_labels()
     fig.legend(lines, labels, loc='lower center', ncol=2)
+
 
     # Mostrar el gráfico
     plt.savefig(f'curves/Charging_{actual_date}_{algoritmo}.png', dpi=600)

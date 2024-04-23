@@ -14,7 +14,6 @@ algoritmo = 'ddpg'
 fecha_ddpg = '2024-02-21'
 fecha_ppo = '2024-02-19'
 
-
 if True:
 
     ### GRAFICA DE GENERACION RBC
@@ -72,22 +71,22 @@ if True:
         Total_sin_EV.append(E_net_curve[a] + E_PV_curve[a])
 
 
-    def add_value_label(x_list, y_list, y_list_ant, color):
+    def add_value_label(x_list, y_list, y_list_ant, color, altura):
         y_list_ant = np.array(y_list_ant).astype(int)
         myArray = np.array(y_list).astype(int)
         for i in range(0, len(x_list)):
             # para evitar escribir dos veces el mismo número en el mismo lugar
             if myArray[i] != y_list_ant[i]:
-                plt.text(i, myArray[i], myArray[i], ha = "center", fontsize = 8, color = 'black')
+                plt.text(i, myArray[i]//altura + 2, myArray[i], ha = "center", fontsize = 20, color = 'black', va = "center")
 
     index = np.arange(len(sb_consume_curve))
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(16, 8))
     ax.bar(index, Total, color='tab:cyan', label = 'Useful EV energy')
-    add_value_label(index, E_PV_curve, np.zeros(len(E_PV_curve)), 'tab:cyan')
+    add_value_label(index, E_PV_curve, np.zeros(len(E_PV_curve)), 'tab:cyan', 2)
     ax.bar(index, Total_sin_EV, color='tab:blue', label = 'Useful grid energy')
-    add_value_label(index, np.array(Total_sin_EV), E_PV_curve, 'tab:blue')
+    add_value_label(index, np.array(Total_sin_EV), E_PV_curve, 'tab:blue', 1)
     ax.bar(index, E_PV_curve, color='tab:green', label = 'Useful PV energy')
-    add_value_label(index, np.array(Total), np.array(Total_sin_EV), 'tab:green')
+    add_value_label(index, np.array(Total), np.array(Total_sin_EV), 'tab:green', 1)
     ax.plot(sb_consume_curve, color='tab:orange', label='SB Demand')
     #ax.plot(E_PV_curve, color='tab:green', label='PV energy')
     #ax.plot(price_curve, color='tab:red', label='Price')
@@ -97,20 +96,24 @@ if True:
     #ax.plot(E_net_curve, color='tab:blue', label='Power grid energy')
 
     ax.tick_params(axis='y')
-    ax.legend(loc="upper left", framealpha=0.7, facecolor='white')
-    ax.set_xlabel('Time [h]')
-    ax.set_ylabel('Energy [KWh]')
+    ax.legend(loc="upper left", framealpha=0.7, facecolor='white', fontsize="20")
+    ax.set_xlabel('Time [h]', fontsize = 'x-large')
+    ax.set_ylabel('Energy [KWh]', fontsize = 'x-large')
     ax.set_xticks(np.arange(0, 23, step=4))
+    ax.set_xlim([-1,24])
     ax.set_ylim(top=130)
+    plt.tick_params(axis='both', which='major', labelsize=20)
+
 
 
     ax1 = ax.twinx()
-    ax1.set_ylabel('Cost [$]')
+    ax1.set_ylabel('Cost [$]', fontsize = 'x-large')
     ax1.plot(price_curve, color='tab:red', label='Price', linewidth=0.9)
     ax1.tick_params(axis='y')
-    ax1.legend(loc="upper right", framealpha=0.7, facecolor='white')
+    ax1.legend(loc="upper right", framealpha=0.7, facecolor='white', fontsize="20")
     ax1.set_ylim(top=0.12)
     ax1.grid(False)
+    plt.tick_params(axis='both', which='major', labelsize=20)
 
     #plt.title(algoritmo)
 
